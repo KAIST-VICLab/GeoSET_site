@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GeoSET: Generalist Foundation Model for SAR-to-EO Image Translation</title>
+  <meta name="description" content="GeoSET is the first generalist model for SAR-to-EO image translation: one parent pretrained on over 3 million curated SAR–EO pairs, adapted to each benchmark by full fine-tuning or LoRA.">
+  <meta name="author" content="Jeonghyeok Do, Munchurl Kim">
+  <meta name="theme-color" content="#1B6FCB">
+  <link rel="canonical" href="https://kaist-viclab.github.io/GeoSET_site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GeoSET">
+  <meta property="og:title" content="GeoSET: Generalist Foundation Model for SAR-to-EO Image Translation">
+  <meta property="og:description" content="GeoSET is the first generalist model for SAR-to-EO image translation: one parent pretrained on over 3 million curated SAR–EO pairs, adapted to each benchmark by full fine-tuning or LoRA.">
+  <meta property="og:url" content="https://kaist-viclab.github.io/GeoSET_site/">
+  <meta property="og:image" content="https://kaist-viclab.github.io/GeoSET_site/static/images/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="The GeoSET logo above a qualitative comparison of SAR-to-EO translation methods on QXS-SAROPT, SAR2Opt, SAR2EO and SpaceNet6, including both GeoSET variants and the ground-truth EO image.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="GeoSET: Generalist Foundation Model for SAR-to-EO Image Translation">
+  <meta name="twitter:description" content="One parent pretrained on over 3 million curated SAR–EO pairs, adapted to six benchmarks by full fine-tuning or LoRA (0.60% of generator parameters, about one hour per dataset).">
+  <meta name="twitter:image" content="https://kaist-viclab.github.io/GeoSET_site/static/images/og.jpg">
+  <meta name="twitter:image:alt" content="The GeoSET logo above a qualitative comparison of SAR-to-EO translation methods on QXS-SAROPT, SAR2Opt, SAR2EO and SpaceNet6, including both GeoSET variants and the ground-truth EO image.">
+  <link rel="icon" href="static/images/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="static/images/favicon-64.png" sizes="64x64" type="image/png">
+  <link rel="icon" href="static/images/icon_square.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="static/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500..800&display=swap">
+  <link rel="stylesheet" href="static/css/family.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <noscript><style>a[href*="/XXXX.XXXX"] { pointer-events: none; cursor: default; }</style></noscript>
+  <script defer src="static/js/family.js"></script>
+  <script defer src="static/js/main.js"></script>
+</head>
+<body>
+
+<svg class="icon-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-arxiv" viewBox="0 0 24 24"><path d="M3.5 9.5L12 4l8.5 5.5M4.5 20h15M6.5 11.5v5.5M10 11.5v5.5M14 11.5v5.5M17.5 11.5v5.5"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 7.5L4 12l4.5 4.5M15.5 7.5L20 12l-4.5 4.5M13.5 5l-3 14"/></symbol>
+  <symbol id="i-gallery" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M10.2 8.6v6.8l5.4-3.4z" fill="currentColor"/></symbol>
+  <symbol id="i-cite" viewBox="0 0 24 24"><path d="M9 4.5c-1.9 0-3 .9-3 2.8v2.4c0 1.3-.7 2.1-2 2.3 1.3.2 2 1 2 2.3v2.4c0 1.9 1.1 2.8 3 2.8M15 4.5c1.9 0 3 .9 3 2.8v2.4c0 1.3.7 2.1 2 2.3-1.3.2-2 1-2 2.3v2.4c0 1.9-1.1 2.8-3 2.8"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-2a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-swipe" viewBox="0 0 24 24"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6.5 9.5L12 15l5.5-5.5"/></symbol>
+</svg>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="topnav" aria-label="Page sections">
+  <div class="topnav-inner container container--wide">
+    <a class="topnav-brand" href="#top" aria-label="GeoSET, back to top"><img src="static/images/icon.svg" width="28" height="28" alt=""><span class="wordmark" aria-hidden="true">Geo<span>SET</span></span></a>
+    <div class="topnav-links">
+      <a href="#gallery">Gallery</a>
+      <a href="#results">Quantitative</a>
+      <a href="#method">Method</a>
+      <a href="#bibtex">BibTeX</a>
+    </div>
+    <a class="topnav-cta" href="https://arxiv.org/pdf/XXXX.XXXXX" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="container">
+    <h1 class="hero-h1">
+      <img class="hero-logo" src="static/images/logo.svg" width="1656" height="410" alt="GeoSET:" fetchpriority="high">
+      <span class="hero-title">Generalist Foundation Model for <span class="hero-accent nowrap">SAR-to-EO</span> Image Translation</span>
+    </h1>
+    <p class="hero-authors">
+      <span class="author"><a href="https://jeonghyeokdo.github.io/" target="_blank" rel="noopener">Jeonghyeok Do</a></span>
+      <span class="author"><a href="https://www.viclab.kaist.ac.kr/" target="_blank" rel="noopener">Munchurl Kim</a><sup>&dagger;</sup></span>
+    </p>
+    <p class="hero-affil">Korea Advanced Institute of Science and Technology (KAIST), South Korea</p>
+    <p class="hero-notes"><span><sup>&dagger;</sup>&thinsp;Corresponding author</span><span class="mono mail"><a href="mailto:ehwjdgur0913@kaist.ac.kr">ehwjdgur0913@kaist.ac.kr</a><a href="mailto:mkimee@kaist.ac.kr">mkimee@kaist.ac.kr</a></span></p>
+    <p class="venue-pill">arXiv preprint, 2026</p>
+    <nav class="btn-row" aria-label="Paper resources">
+      <a class="btn" href="https://arxiv.org/pdf/XXXX.XXXXX" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+      <a class="btn" href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-arxiv"/></svg>arXiv</a>
+      <a class="btn" href="https://github.com/KAIST-VICLab/GeoSET" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code</a>
+      <a class="btn" href="#gallery"><svg class="icon" aria-hidden="true"><use href="#i-gallery"/></svg>Gallery</a>
+      <a class="btn" href="#bibtex"><svg class="icon" aria-hidden="true"><use href="#i-cite"/></svg>BibTeX</a>
+    </nav>
+    <details class="abstract-toggle" id="abstract" data-animate>
+      <summary><span>Abstract</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+      <div class="abstract-panel">
+        <div class="abstract">
+          <p>Paired synthetic aperture radar (SAR) and electro-optical (EO) imagery is increasingly available across sensors, resolutions, and geographic regions. Yet existing SAR-to-EO image translation (SET) methods are typically trained on a single, limited-scale dataset, producing models specialized to particular sensing conditions.</p>
+          <p>We introduce <b>GeoSET</b>, <i>the first generalist model for SET</i>, built around a single pretrained parent that is adapted to downstream datasets under a common protocol. We curate over 3 million high-quality SAR&ndash;EO pairs from a collection of more than 10 million SAR observations, spanning diverse sensors, spatial resolutions, and ground sampling distances. To bridge the modality gap between SAR observations and a pretrained image generator, we develop a speckle-robust SAR encoder and pretrain the conditional generator on this heterogeneous corpus.</p>
+          <p>The resulting parent supports efficient adaptation across downstream datasets through low-rank adaptation (LoRA), updating only 0.60% of the generator parameters and requiring approximately one hour per dataset. Across six downstream benchmarks, GeoSET achieves state-of-the-art results in FID and DISTS with full fine-tuning or LoRA, demonstrating effective transfer across heterogeneous SAR&ndash;EO domains.</p>
+        </div>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Headline + qualitative results: paper Fig. 1 (benchmark rows without the internal dataset) and Fig. 5 -->
+  <section class="section section--headline" aria-labelledby="headline-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="headline-title">Pretrain once, adapt to many</h2>
+        <p class="lead">One parent model, pretrained on 3M+ curated <span class="nowrap">SAR&ndash;EO</span> pairs, adapted to each benchmark with LoRA or full fine-tuning.</p>
+      </header>
+      <div class="result-figs">
+        <figure class="figure">
+          <a class="figure-media zoom" href="static/images/teaser_full.jpg" data-title="Qualitative comparison on SAR-to-EO image translation benchmarks">
+            <img src="static/images/teaser_1600.jpg"
+                 srcset="static/images/teaser_1200.jpg 1200w, static/images/teaser_1600.jpg 1600w, static/images/teaser_2000.jpg 2000w"
+                 sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                 width="1600" height="949" fetchpriority="high" decoding="async"
+                 alt="Grid with five benchmark rows (QXS-SAROPT, SAR2Opt, SAR2EO, SpaceNet6, CAP-BSG) and nine columns: input SAR, SD2.1 fine-tuning, BBDM, E3Diff, cBBDM, C-DiffSET, GeoSET with LoRA, GeoSET with full fine-tuning, and ground-truth EO.">
+          </a>
+          <figcaption><b>Qualitative comparison on SAR-to-EO image translation benchmarks.</b> Columns (g)&ndash;(h): GeoSET with LoRA and full fine-tuning; (i): ground-truth EO.</figcaption>
+        </figure>
+        <figure class="figure">
+          <a class="figure-media zoom" href="static/images/qualitative_full.jpg" data-title="Qualitative comparison on SET benchmarks">
+            <img src="static/images/qualitative_2000.jpg"
+                 srcset="static/images/qualitative_1200.jpg 1200w, static/images/qualitative_2000.jpg 2000w"
+                 sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+                 width="2000" height="963" loading="lazy" decoding="async"
+                 alt="Grid with four benchmark rows (QXS-SAROPT, SAR2Opt, SAR2EO, SpaceNet6) and nine columns: input SAR, SD2.1 FT, BBDM, E3Diff, cBBDM, C-DiffSET, GeoSET LoRA, GeoSET full FT, and ground-truth EO.">
+          </a>
+          <figcaption><b>Qualitative comparison on QXS-SAROPT, SAR2Opt, SAR2EO and SpaceNet6.</b> All methods receive the same SAR observation; columns as above.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive gallery -->
+  <section class="section section--band" id="gallery" aria-labelledby="gallery-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="gallery-title">All methods, same scenes</h2>
+        <p class="lead">Every retrained baseline and both GeoSET variants on the same SAR input, 20 scenes per benchmark. Select a tile to compare it with the ground truth.</p>
+      </header>
+
+      <div class="tabs">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Benchmark">
+            <button class="tab" role="tab" type="button" id="tab-g-qxs-saropt" aria-controls="panel-g-qxs-saropt" aria-selected="true">QXS-SAROPT</button>
+            <button class="tab" role="tab" type="button" id="tab-g-sar2opt" aria-controls="panel-g-sar2opt" aria-selected="false">SAR2Opt</button>
+            <button class="tab" role="tab" type="button" id="tab-g-sar2eo" aria-controls="panel-g-sar2eo" aria-selected="false">SAR2EO</button>
+            <button class="tab" role="tab" type="button" id="tab-g-spacenet6" aria-controls="panel-g-spacenet6" aria-selected="false">SpaceNet6</button>
+            <button class="tab" role="tab" type="button" id="tab-g-cap-bsg" aria-controls="panel-g-cap-bsg" aria-selected="false">CAP-BSG</button>
+          </div>
+        </div>
+        <div class="legend" aria-label="Tile legend">
+          <span class="legend-item"><span class="legend-swatch legend-swatch--input"></span>Input SAR</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--ours"></span>GeoSET (ours)</span>
+          <span class="legend-item"><span class="legend-swatch legend-swatch--gt"></span>Ground-truth EO</span>
+          <span class="legend-item"><span class="legend-swatch"></span>Baseline (retrained)</span>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-qxs-saropt" aria-labelledby="tab-g-qxs-saropt" tabindex="-1">
+          <div data-gallery="qxs-saropt"></div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-sar2opt" aria-labelledby="tab-g-sar2opt" tabindex="-1" hidden>
+          <div data-gallery="sar2opt"></div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-sar2eo" aria-labelledby="tab-g-sar2eo" tabindex="-1" hidden>
+          <div data-gallery="sar2eo"></div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-spacenet6" aria-labelledby="tab-g-spacenet6" tabindex="-1" hidden>
+          <div data-gallery="spacenet6"></div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-g-cap-bsg" aria-labelledby="tab-g-cap-bsg" tabindex="-1" hidden>
+          <div data-gallery="cap-bsg"></div>
+        </div>
+      </div>
+      <noscript><p class="gallery-noscript">The interactive gallery needs JavaScript. The figures above show representative scenes for a subset of the methods.</p></noscript>
+      <p class="carousel-hint"><span class="hint-pointer">Use the arrows or the <kbd>&larr;</kbd>&thinsp;<kbd>&rarr;</kbd> keys to change scene &middot; click a tile to open the comparison slider</span><span class="hint-touch">Swipe or use the arrows to change scene &middot; tap a tile to open the comparison slider</span></p>
+<script type="application/json" id="gallery-data">
+{"root":"static/tiles/","tileMin":160,"compareScale":2,"datasets":[{"id":"qxs-saropt","name":"QXS-SAROPT","unit":"Scene","dir":"qxs-saropt","cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":227,"h":227},{"n":"GeoSET (LoRA)","v":"Ours","k":"ours","f":"17_geoset-lora.jpg","w":227,"h":227},{"n":"GeoSET (full FT)","v":"Ours","k":"ours","f":"18_geoset-full-ft.jpg","w":227,"h":227},{"n":"GT EO","v":"reference","k":"gt","f":"19_gt-eo.jpg","w":227,"h":227},{"n":"pix2pix","v":"CVPR'17","k":"baseline","f":"02_pix2pix.jpg","w":227,"h":226},{"n":"CycleGAN","v":"ICCV'17","k":"baseline","f":"03_cyclegan.jpg","w":227,"h":226},{"n":"pix2pixHD","v":"CVPR'18","k":"baseline","f":"04_pix2pixhd.jpg","w":227,"h":226},{"n":"SPADE","v":"CVPR'19","k":"baseline","f":"05_spade.jpg","w":227,"h":226},{"n":"DDPM (SR3)","v":"TPAMI'22","k":"baseline","f":"06_ddpm-sr3.jpg","w":227,"h":226},{"n":"SD2.1 FT","v":"CVPR'22","k":"baseline","f":"07_sd2-1-ft.jpg","w":227,"h":226},{"n":"BBDM","v":"CVPR'23","k":"baseline","f":"08_bbdm.jpg","w":227,"h":226},{"n":"ControlNet","v":"ICCV'23","k":"baseline","f":"09_controlnet.jpg","w":227,"h":226},{"n":"HI-Diff","v":"NeurIPS'23","k":"baseline","f":"10_hi-diff.jpg","w":227,"h":226},{"n":"ResShift","v":"NeurIPS'23","k":"baseline","f":"11_resshift.jpg","w":227,"h":226},{"n":"StegoGAN","v":"CVPR'24","k":"baseline","f":"12_stegogan.jpg","w":227,"h":226},{"n":"CondDiff","v":"GRSL'23","k":"baseline","f":"13_conddiff.jpg","w":227,"h":227},{"n":"E3Diff","v":"GRSL'24","k":"baseline","f":"14_e3diff.jpg","w":227,"h":227},{"n":"cBBDM","v":"GRSL'25","k":"baseline","f":"15_cbbdm.jpg","w":227,"h":227},{"n":"C-DiffSET","v":"TCSVT'26","k":"baseline","f":"16_c-diffset.jpg","w":227,"h":227}],"scenes":[{"dir":"s01","name":"Scene 1"},{"dir":"s02","name":"Scene 2"},{"dir":"s03","name":"Scene 3"},{"dir":"s04","name":"Scene 4"},{"dir":"s05","name":"Scene 5"},{"dir":"s06","name":"Scene 6"},{"dir":"s07","name":"Scene 7"},{"dir":"s08","name":"Scene 8"},{"dir":"s09","name":"Scene 9"},{"dir":"s10","name":"Scene 10"},{"dir":"s11","name":"Scene 11"},{"dir":"s12","name":"Scene 12"},{"dir":"s13","name":"Scene 13"},{"dir":"s14","name":"Scene 14"},{"dir":"s15","name":"Scene 15"},{"dir":"s16","name":"Scene 16"},{"dir":"s17","name":"Scene 17"},{"dir":"s18","name":"Scene 18"},{"dir":"s19","name":"Scene 19"},{"dir":"s20","name":"Scene 20"}]},{"id":"sar2opt","name":"SAR2Opt","unit":"Scene","dir":"sar2opt","cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":227,"h":227},{"n":"GeoSET (LoRA)","v":"Ours","k":"ours","f":"17_geoset-lora.jpg","w":227,"h":227},{"n":"GeoSET (full FT)","v":"Ours","k":"ours","f":"18_geoset-full-ft.jpg","w":227,"h":227},{"n":"GT EO","v":"reference","k":"gt","f":"19_gt-eo.jpg","w":227,"h":227},{"n":"pix2pix","v":"CVPR'17","k":"baseline","f":"02_pix2pix.jpg","w":227,"h":226},{"n":"CycleGAN","v":"ICCV'17","k":"baseline","f":"03_cyclegan.jpg","w":227,"h":226},{"n":"pix2pixHD","v":"CVPR'18","k":"baseline","f":"04_pix2pixhd.jpg","w":227,"h":226},{"n":"SPADE","v":"CVPR'19","k":"baseline","f":"05_spade.jpg","w":227,"h":226},{"n":"DDPM (SR3)","v":"TPAMI'22","k":"baseline","f":"06_ddpm-sr3.jpg","w":227,"h":226},{"n":"SD2.1 FT","v":"CVPR'22","k":"baseline","f":"07_sd2-1-ft.jpg","w":227,"h":226},{"n":"BBDM","v":"CVPR'23","k":"baseline","f":"08_bbdm.jpg","w":227,"h":226},{"n":"ControlNet","v":"ICCV'23","k":"baseline","f":"09_controlnet.jpg","w":227,"h":226},{"n":"HI-Diff","v":"NeurIPS'23","k":"baseline","f":"10_hi-diff.jpg","w":227,"h":226},{"n":"ResShift","v":"NeurIPS'23","k":"baseline","f":"11_resshift.jpg","w":227,"h":226},{"n":"StegoGAN","v":"CVPR'24","k":"baseline","f":"12_stegogan.jpg","w":227,"h":226},{"n":"CondDiff","v":"GRSL'23","k":"baseline","f":"13_conddiff.jpg","w":227,"h":227},{"n":"E3Diff","v":"GRSL'24","k":"baseline","f":"14_e3diff.jpg","w":227,"h":227},{"n":"cBBDM","v":"GRSL'25","k":"baseline","f":"15_cbbdm.jpg","w":227,"h":227},{"n":"C-DiffSET","v":"TCSVT'26","k":"baseline","f":"16_c-diffset.jpg","w":227,"h":227}],"scenes":[{"dir":"s01","name":"Scene 1"},{"dir":"s02","name":"Scene 2"},{"dir":"s03","name":"Scene 3"},{"dir":"s04","name":"Scene 4"},{"dir":"s05","name":"Scene 5"},{"dir":"s06","name":"Scene 6"},{"dir":"s07","name":"Scene 7"},{"dir":"s08","name":"Scene 8"},{"dir":"s09","name":"Scene 9"},{"dir":"s10","name":"Scene 10"},{"dir":"s11","name":"Scene 11"},{"dir":"s12","name":"Scene 12"},{"dir":"s13","name":"Scene 13"},{"dir":"s14","name":"Scene 14"},{"dir":"s15","name":"Scene 15"},{"dir":"s16","name":"Scene 16"},{"dir":"s17","name":"Scene 17"},{"dir":"s18","name":"Scene 18"},{"dir":"s19","name":"Scene 19"},{"dir":"s20","name":"Scene 20"}]},{"id":"sar2eo","name":"SAR2EO","unit":"Scene","dir":"sar2eo","cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":227,"h":227},{"n":"GeoSET (LoRA)","v":"Ours","k":"ours","f":"17_geoset-lora.jpg","w":227,"h":227},{"n":"GeoSET (full FT)","v":"Ours","k":"ours","f":"18_geoset-full-ft.jpg","w":227,"h":227},{"n":"GT EO","v":"reference","k":"gt","f":"19_gt-eo.jpg","w":227,"h":227},{"n":"pix2pix","v":"CVPR'17","k":"baseline","f":"02_pix2pix.jpg","w":227,"h":226},{"n":"CycleGAN","v":"ICCV'17","k":"baseline","f":"03_cyclegan.jpg","w":227,"h":226},{"n":"pix2pixHD","v":"CVPR'18","k":"baseline","f":"04_pix2pixhd.jpg","w":227,"h":226},{"n":"SPADE","v":"CVPR'19","k":"baseline","f":"05_spade.jpg","w":227,"h":226},{"n":"DDPM (SR3)","v":"TPAMI'22","k":"baseline","f":"06_ddpm-sr3.jpg","w":227,"h":226},{"n":"SD2.1 FT","v":"CVPR'22","k":"baseline","f":"07_sd2-1-ft.jpg","w":227,"h":226},{"n":"BBDM","v":"CVPR'23","k":"baseline","f":"08_bbdm.jpg","w":227,"h":226},{"n":"ControlNet","v":"ICCV'23","k":"baseline","f":"09_controlnet.jpg","w":227,"h":226},{"n":"HI-Diff","v":"NeurIPS'23","k":"baseline","f":"10_hi-diff.jpg","w":227,"h":226},{"n":"ResShift","v":"NeurIPS'23","k":"baseline","f":"11_resshift.jpg","w":227,"h":226},{"n":"StegoGAN","v":"CVPR'24","k":"baseline","f":"12_stegogan.jpg","w":227,"h":226},{"n":"CondDiff","v":"GRSL'23","k":"baseline","f":"13_conddiff.jpg","w":227,"h":227},{"n":"E3Diff","v":"GRSL'24","k":"baseline","f":"14_e3diff.jpg","w":227,"h":227},{"n":"cBBDM","v":"GRSL'25","k":"baseline","f":"15_cbbdm.jpg","w":227,"h":227},{"n":"C-DiffSET","v":"TCSVT'26","k":"baseline","f":"16_c-diffset.jpg","w":227,"h":227}],"scenes":[{"dir":"s01","name":"Scene 1"},{"dir":"s02","name":"Scene 2"},{"dir":"s03","name":"Scene 3"},{"dir":"s04","name":"Scene 4"},{"dir":"s05","name":"Scene 5"},{"dir":"s06","name":"Scene 6"},{"dir":"s07","name":"Scene 7"},{"dir":"s08","name":"Scene 8"},{"dir":"s09","name":"Scene 9"},{"dir":"s10","name":"Scene 10"},{"dir":"s11","name":"Scene 11"},{"dir":"s12","name":"Scene 12"},{"dir":"s13","name":"Scene 13"},{"dir":"s14","name":"Scene 14"},{"dir":"s15","name":"Scene 15"},{"dir":"s16","name":"Scene 16"},{"dir":"s17","name":"Scene 17"},{"dir":"s18","name":"Scene 18"},{"dir":"s19","name":"Scene 19"},{"dir":"s20","name":"Scene 20"}]},{"id":"spacenet6","name":"SpaceNet6","unit":"Scene","dir":"spacenet6","cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":226,"h":227},{"n":"GeoSET (LoRA)","v":"Ours","k":"ours","f":"18_geoset-lora.jpg","w":226,"h":227},{"n":"GeoSET (full FT)","v":"Ours","k":"ours","f":"19_geoset-full-ft.jpg","w":226,"h":227},{"n":"GT EO","v":"reference","k":"gt","f":"20_gt-eo.jpg","w":226,"h":227},{"n":"pix2pix","v":"CVPR'17","k":"baseline","f":"02_pix2pix.jpg","w":226,"h":227},{"n":"CycleGAN","v":"ICCV'17","k":"baseline","f":"03_cyclegan.jpg","w":226,"h":227},{"n":"pix2pixHD","v":"CVPR'18","k":"baseline","f":"04_pix2pixhd.jpg","w":226,"h":227},{"n":"SPADE","v":"CVPR'19","k":"baseline","f":"05_spade.jpg","w":226,"h":227},{"n":"DDPM (SR3)","v":"TPAMI'22","k":"baseline","f":"06_ddpm-sr3.jpg","w":226,"h":227},{"n":"SD2.1 FT","v":"CVPR'22","k":"baseline","f":"07_sd2-1-ft.jpg","w":226,"h":227},{"n":"BBDM","v":"CVPR'23","k":"baseline","f":"08_bbdm.jpg","w":226,"h":226},{"n":"ControlNet","v":"ICCV'23","k":"baseline","f":"09_controlnet.jpg","w":226,"h":226},{"n":"HI-Diff","v":"NeurIPS'23","k":"baseline","f":"10_hi-diff.jpg","w":226,"h":226},{"n":"ResShift","v":"NeurIPS'23","k":"baseline","f":"11_resshift.jpg","w":226,"h":226},{"n":"StegoGAN","v":"CVPR'24","k":"baseline","f":"12_stegogan.jpg","w":226,"h":226},{"n":"CondDiff","v":"GRSL'23","k":"baseline","f":"13_conddiff.jpg","w":226,"h":226},{"n":"E3Diff","v":"GRSL'24","k":"baseline","f":"14_e3diff.jpg","w":226,"h":227},{"n":"cBBDM","v":"GRSL'25","k":"baseline","f":"15_cbbdm.jpg","w":226,"h":227},{"n":"Seg-CycleGAN","v":"GRSL'25","k":"baseline","f":"16_seg-cyclegan.jpg","w":226,"h":227},{"n":"C-DiffSET","v":"TCSVT'26","k":"baseline","f":"17_c-diffset.jpg","w":226,"h":227}],"scenes":[{"dir":"s01","name":"Scene 1"},{"dir":"s02","name":"Scene 2"},{"dir":"s03","name":"Scene 3"},{"dir":"s04","name":"Scene 4"},{"dir":"s05","name":"Scene 5"},{"dir":"s06","name":"Scene 6"},{"dir":"s07","name":"Scene 7"},{"dir":"s08","name":"Scene 8"},{"dir":"s09","name":"Scene 9"},{"dir":"s10","name":"Scene 10"},{"dir":"s11","name":"Scene 11"},{"dir":"s12","name":"Scene 12"},{"dir":"s13","name":"Scene 13"},{"dir":"s14","name":"Scene 14"},{"dir":"s15","name":"Scene 15"},{"dir":"s16","name":"Scene 16"},{"dir":"s17","name":"Scene 17"},{"dir":"s18","name":"Scene 18"},{"dir":"s19","name":"Scene 19"},{"dir":"s20","name":"Scene 20"}]},{"id":"cap-bsg","name":"CAP-BSG","unit":"Scene","dir":"cap-bsg","cols":[{"n":"Input SAR","v":"input","k":"input","f":"01_input-sar.jpg","w":227,"h":227},{"n":"GeoSET (LoRA)","v":"Ours","k":"ours","f":"17_geoset-lora.jpg","w":227,"h":227},{"n":"GeoSET (full FT)","v":"Ours","k":"ours","f":"18_geoset-full-ft.jpg","w":227,"h":227},{"n":"GT EO","v":"reference","k":"gt","f":"19_gt-eo.jpg","w":227,"h":227},{"n":"pix2pix","v":"CVPR'17","k":"baseline","f":"02_pix2pix.jpg","w":227,"h":226},{"n":"CycleGAN","v":"ICCV'17","k":"baseline","f":"03_cyclegan.jpg","w":227,"h":226},{"n":"pix2pixHD","v":"CVPR'18","k":"baseline","f":"04_pix2pixhd.jpg","w":227,"h":226},{"n":"SPADE","v":"CVPR'19","k":"baseline","f":"05_spade.jpg","w":227,"h":226},{"n":"DDPM (SR3)","v":"TPAMI'22","k":"baseline","f":"06_ddpm-sr3.jpg","w":227,"h":226},{"n":"SD2.1 FT","v":"CVPR'22","k":"baseline","f":"07_sd2-1-ft.jpg","w":227,"h":226},{"n":"BBDM","v":"CVPR'23","k":"baseline","f":"08_bbdm.jpg","w":227,"h":226},{"n":"ControlNet","v":"ICCV'23","k":"baseline","f":"09_controlnet.jpg","w":227,"h":226},{"n":"HI-Diff","v":"NeurIPS'23","k":"baseline","f":"10_hi-diff.jpg","w":227,"h":226},{"n":"ResShift","v":"NeurIPS'23","k":"baseline","f":"11_resshift.jpg","w":227,"h":226},{"n":"StegoGAN","v":"CVPR'24","k":"baseline","f":"12_stegogan.jpg","w":227,"h":226},{"n":"CondDiff","v":"GRSL'23","k":"baseline","f":"13_conddiff.jpg","w":227,"h":227},{"n":"E3Diff","v":"GRSL'24","k":"baseline","f":"14_e3diff.jpg","w":227,"h":227},{"n":"cBBDM","v":"GRSL'25","k":"baseline","f":"15_cbbdm.jpg","w":227,"h":227},{"n":"C-DiffSET","v":"TCSVT'26","k":"baseline","f":"16_c-diffset.jpg","w":227,"h":227}],"scenes":[{"dir":"s01","name":"Scene 1"},{"dir":"s02","name":"Scene 2"},{"dir":"s03","name":"Scene 3"},{"dir":"s04","name":"Scene 4"},{"dir":"s05","name":"Scene 5"},{"dir":"s06","name":"Scene 6"},{"dir":"s07","name":"Scene 7"},{"dir":"s08","name":"Scene 8"},{"dir":"s09","name":"Scene 9"},{"dir":"s10","name":"Scene 10"},{"dir":"s11","name":"Scene 11"},{"dir":"s12","name":"Scene 12"},{"dir":"s13","name":"Scene 13"},{"dir":"s14","name":"Scene 14"},{"dir":"s15","name":"Scene 15"},{"dir":"s16","name":"Scene 16"},{"dir":"s17","name":"Scene 17"},{"dir":"s18","name":"Scene 18"},{"dir":"s19","name":"Scene 19"},{"dir":"s20","name":"Scene 20"}]}]}
+</script>
+    </div>
+  </section>
+
+  <!-- Quantitative results -->
+  <section class="section" id="results" aria-labelledby="results-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="results-title">Quantitative results</h2>
+        <p class="lead">Across full fine-tuning and LoRA, GeoSET achieves the best reported <b>FID on all six benchmarks</b> and the best <b>DISTS on five</b>.</p>
+      </header>
+
+      <div class="radar-row">
+        <figure class="figure radar-fig">
+          <a class="figure-media figure-media--plain zoom" href="static/images/radar.png" data-title="Cross-dataset comparison">
+            <img src="static/images/radar.png" width="1342" height="1460" loading="lazy" decoding="async"
+                 alt="Radar chart of FID and DISTS on QXS-SAROPT, SAR2Opt, SAR2EO, SpaceNet6, CAP-BSG and KOMPSAT, normalized per dataset and metric, for CondDiff, E3Diff, cBBDM, C-DiffSET, GeoSET (LoRA) and GeoSET (full FT). The two GeoSET curves are the outermost on most axes.">
+          </a>
+          <figcaption><b>Cross-dataset comparison.</b> FID and DISTS per benchmark, normalized as 100&thinsp;&times;&thinsp;best/value (outer ring = best). FID and DISTS are the primary metrics.</figcaption>
+        </figure>
+      </div>
+
+      <div class="tabs" id="tables">
+        <div class="tabs-head">
+          <div class="tablist" role="tablist" aria-label="Results tables">
+            <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="true">Table 2<small>QXS-SAROPT &amp; SAR2Opt</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t3" aria-controls="panel-t3" aria-selected="false">Table 3<small>SAR2EO &amp; SpaceNet6</small></button>
+            <button class="tab" role="tab" type="button" id="tab-t8" aria-controls="panel-t8" aria-selected="false">Table 8<small>CAP-BSG &amp; KOMPSAT</small></button>
+          </div>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1">
+<figure class="table-figure" id="table-2">
+<figcaption><span class="fig-label">Table 2.</span> Quantitative comparison on QXS-SAROPT and SAR2Opt. We retrain (evaluate) all competing methods on the same training (test) splits. <b>Bold</b> and <u>underlined</u> values indicate the best and second-best results, respectively.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-main-qxs-sar2opt-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-main-qxs-sar2opt-t0-vl" data-table="#tab-main-qxs-sar2opt-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">QXS-SAROPT</button><button type="button" data-view="g2" aria-pressed="false">SAR2Opt</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (scrolls horizontally)"><table class="results" id="tab-main-qxs-sar2opt-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Method</th>
+<th rowspan="2" scope="col" class="col-venue">Venue</th>
+<th colspan="7" scope="colgroup" class="col-group grp-start g1"><span>QXS-SAROPT</span></th>
+<th colspan="7" scope="colgroup" class="col-group grp-start g2"><span>SAR2Opt</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start g1">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">DISTS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">KID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">DINO<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start g2">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">DISTS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">KID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">DINO<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">PSNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="16"><span class="group-label">General image-to-image translation methods</span></td></tr>
+<tr><td class="col-method">pix2pix</td><td class="col-venue">CVPR'17</td><td class="grp-start g1">174.6</td><td class="g1">0.373</td><td class="g1">0.1713</td><td class="g1">0.275</td><td class="g1">0.665</td><td class="g1">0.203</td><td class="g1">12.33</td><td class="grp-start g2">261.9</td><td class="g2">0.347</td><td class="g2">0.2164</td><td class="g2">0.277</td><td class="g2">0.657</td><td class="g2">0.199</td><td class="g2">13.39</td></tr>
+<tr><td class="col-method">CycleGAN</td><td class="col-venue">ICCV'17</td><td class="grp-start g1">115.5</td><td class="g1">0.362</td><td class="g1">0.0802</td><td class="g1">0.283</td><td class="g1">0.647</td><td class="g1">0.278</td><td class="g1">13.25</td><td class="grp-start g2">139.1</td><td class="g2">0.323</td><td class="g2">0.0343</td><td class="g2">0.374</td><td class="g2">0.642</td><td class="g2">0.188</td><td class="g2">12.68</td></tr>
+<tr><td class="col-method">pix2pixHD</td><td class="col-venue">CVPR'18</td><td class="grp-start g1">85.7</td><td class="g1">0.298</td><td class="g1">0.0492</td><td class="g1">0.403</td><td class="g1">0.573</td><td class="g1">0.358</td><td class="g1">16.13</td><td class="grp-start g2">146.3</td><td class="g2">0.283</td><td class="g2">0.0654</td><td class="g2">0.475</td><td class="g2">0.567</td><td class="g2">0.268</td><td class="g2">15.95</td></tr>
+<tr><td class="col-method">SPADE</td><td class="col-venue">CVPR'19</td><td class="grp-start g1">90.7</td><td class="g1">0.292</td><td class="g1">0.0607</td><td class="g1">0.366</td><td class="g1">0.599</td><td class="g1">0.320</td><td class="g1">14.53</td><td class="grp-start g2">142.5</td><td class="g2">0.265</td><td class="g2">0.0518</td><td class="g2">0.447</td><td class="g2">0.597</td><td class="g2">0.234</td><td class="g2">14.47</td></tr>
+<tr><td class="col-method">DDPM (SR3)</td><td class="col-venue">TPAMI'22</td><td class="grp-start g1">43.8</td><td class="g1">0.311</td><td class="g1">0.0189</td><td class="g1">0.425</td><td class="g1">0.620</td><td class="g1">0.359</td><td class="g1">14.04</td><td class="grp-start g2">122.5</td><td class="g2">0.295</td><td class="g2">0.0437</td><td class="g2">0.497</td><td class="g2">0.610</td><td class="g2">0.313</td><td class="g2">13.65</td></tr>
+<tr><td class="col-method">SD2.1 FT</td><td class="col-venue">CVPR'22</td><td class="grp-start g1 second">19.1</td><td class="g1">0.257</td><td class="g1 second">0.0042</td><td class="g1">0.489</td><td class="g1">0.561</td><td class="g1">0.348</td><td class="g1">15.40</td><td class="grp-start g2 second">71.8</td><td class="g2">0.211</td><td class="g2">0.0094</td><td class="g2">0.600</td><td class="g2">0.541</td><td class="g2">0.293</td><td class="g2">16.24</td></tr>
+<tr><td class="col-method">BBDM</td><td class="col-venue">CVPR'23</td><td class="grp-start g1">76.6</td><td class="g1">0.270</td><td class="g1">0.0479</td><td class="g1">0.414</td><td class="g1">0.568</td><td class="g1">0.352</td><td class="g1">15.34</td><td class="grp-start g2">143.1</td><td class="g2">0.290</td><td class="g2">0.0671</td><td class="g2">0.466</td><td class="g2">0.590</td><td class="g2">0.276</td><td class="g2">15.29</td></tr>
+<tr><td class="col-method">ControlNet</td><td class="col-venue">ICCV'23</td><td class="grp-start g1">50.4</td><td class="g1">0.307</td><td class="g1">0.0211</td><td class="g1">0.458</td><td class="g1">0.604</td><td class="g1">0.297</td><td class="g1">13.42</td><td class="grp-start g2">140.5</td><td class="g2">0.350</td><td class="g2">0.0480</td><td class="g2">0.479</td><td class="g2">0.643</td><td class="g2">0.217</td><td class="g2">11.73</td></tr>
+<tr><td class="col-method">HI-Diff</td><td class="col-venue">NeurIPS'23</td><td class="grp-start g1">324.3</td><td class="g1">0.539</td><td class="g1">0.3269</td><td class="g1">0.215</td><td class="g1">0.692</td><td class="g1 best">0.457</td><td class="g1 best">17.10</td><td class="grp-start g2">319.8</td><td class="g2">0.473</td><td class="g2">0.2357</td><td class="g2">0.277</td><td class="g2">0.692</td><td class="g2 best">0.384</td><td class="g2 best">17.36</td></tr>
+<tr><td class="col-method">ResShift</td><td class="col-venue">NeurIPS'23</td><td class="grp-start g1">140.2</td><td class="g1">0.334</td><td class="g1">0.0872</td><td class="g1">0.295</td><td class="g1">0.607</td><td class="g1">0.217</td><td class="g1">14.20</td><td class="grp-start g2">141.7</td><td class="g2">0.304</td><td class="g2">0.0515</td><td class="g2">0.435</td><td class="g2">0.597</td><td class="g2">0.177</td><td class="g2">14.31</td></tr>
+<tr><td class="col-method">StegoGAN</td><td class="col-venue">CVPR'24</td><td class="grp-start g1">106.8</td><td class="g1">0.384</td><td class="g1">0.0707</td><td class="g1">0.261</td><td class="g1">0.658</td><td class="g1">0.254</td><td class="g1">12.96</td><td class="grp-start g2">149.8</td><td class="g2">0.332</td><td class="g2">0.0396</td><td class="g2">0.362</td><td class="g2">0.652</td><td class="g2">0.162</td><td class="g2">12.39</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="16"><span class="group-label">SAR-to-EO image translation (SET) methods</span></td></tr>
+<tr><td class="col-method">CondDiff</td><td class="col-venue">GRSL'23</td><td class="grp-start g1">88.6</td><td class="g1">0.355</td><td class="g1">0.0537</td><td class="g1">0.310</td><td class="g1">0.730</td><td class="g1">0.213</td><td class="g1">11.55</td><td class="grp-start g2">211.8</td><td class="g2">0.415</td><td class="g2">0.1379</td><td class="g2">0.343</td><td class="g2">0.686</td><td class="g2">0.248</td><td class="g2">12.48</td></tr>
+<tr><td class="col-method">E3Diff</td><td class="col-venue">GRSL'24</td><td class="grp-start g1">47.8</td><td class="g1">0.278</td><td class="g1">0.0167</td><td class="g1">0.379</td><td class="g1 second">0.530</td><td class="g1">0.302</td><td class="g1">16.44</td><td class="grp-start g2">104.7</td><td class="g2">0.232</td><td class="g2">0.0306</td><td class="g2">0.541</td><td class="g2 best">0.529</td><td class="g2">0.249</td><td class="g2">16.09</td></tr>
+<tr><td class="col-method">cBBDM</td><td class="col-venue">GRSL'25</td><td class="grp-start g1">50.6</td><td class="g1">0.246</td><td class="g1">0.0284</td><td class="g1">0.492</td><td class="g1">0.539</td><td class="g1">0.372</td><td class="g1">16.02</td><td class="grp-start g2">222.3</td><td class="g2">0.377</td><td class="g2">0.1521</td><td class="g2">0.413</td><td class="g2">0.571</td><td class="g2 second">0.361</td><td class="g2 second">17.05</td></tr>
+<tr><td class="col-method">C-DiffSET</td><td class="col-venue">TCSVT'26</td><td class="grp-start g1">19.9</td><td class="g1 best">0.233</td><td class="g1">0.0055</td><td class="g1">0.522</td><td class="g1 best">0.526</td><td class="g1 second">0.380</td><td class="g1 second">16.92</td><td class="grp-start g2">78.1</td><td class="g2">0.214</td><td class="g2">0.0138</td><td class="g2">0.601</td><td class="g2 second">0.529</td><td class="g2">0.314</td><td class="g2">16.81</td></tr>
+<tr class="ours ours--lora"><td class="col-method">GeoSET (LoRA)</td><td class="col-venue">–</td><td class="grp-start g1">19.3</td><td class="g1">0.254</td><td class="g1">0.0050</td><td class="g1 second">0.544</td><td class="g1">0.564</td><td class="g1">0.326</td><td class="g1">14.67</td><td class="grp-start g2">74.6</td><td class="g2 second">0.200</td><td class="g2 second">0.0066</td><td class="g2 best">0.626</td><td class="g2">0.535</td><td class="g2">0.278</td><td class="g2">15.50</td></tr>
+<tr class="ours ours--ft"><td class="col-method">GeoSET (full FT)</td><td class="col-venue">–</td><td class="grp-start g1 best">16.9</td><td class="g1 second">0.244</td><td class="g1 best">0.0032</td><td class="g1 best">0.558</td><td class="g1">0.553</td><td class="g1">0.332</td><td class="g1">15.07</td><td class="grp-start g2 best">71.1</td><td class="g2 best">0.196</td><td class="g2 best">0.0052</td><td class="g2 second">0.614</td><td class="g2">0.532</td><td class="g2">0.279</td><td class="g2">15.66</td></tr>
+</tbody>
+</table></div></div></div>
+
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t3" aria-labelledby="tab-t3" tabindex="-1" hidden>
+<figure class="table-figure" id="table-3">
+<figcaption><span class="fig-label">Table 3.</span> Quantitative comparison on SAR2EO and SpaceNet6. We retrain (evaluate) all competing methods on the same training (test) splits. <b>Bold</b> is the best, and <u>underlined</u> is the 2nd best.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-main-sar2eo-spacenet6-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-main-sar2eo-spacenet6-t0-vl" data-table="#tab-main-sar2eo-spacenet6-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">SAR2EO</button><button type="button" data-view="g2" aria-pressed="false">SpaceNet6</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 3 (scrolls horizontally)"><table class="results" id="tab-main-sar2eo-spacenet6-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Method</th>
+<th colspan="7" scope="colgroup" class="col-group grp-start g1"><span>SAR2EO</span></th>
+<th colspan="7" scope="colgroup" class="col-group grp-start g2"><span>SpaceNet6</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start g1">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">DISTS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">KID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">DINO<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start g2">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">DISTS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">KID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">DINO<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">PSNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="15"><span class="group-label">General image-to-image translation methods</span></td></tr>
+<tr><td class="col-method">pix2pix</td><td class="grp-start g1">169.9</td><td class="g1">0.315</td><td class="g1">0.1551</td><td class="g1">0.400</td><td class="g1">0.573</td><td class="g1">0.455</td><td class="g1">18.06</td><td class="grp-start g2">166.7</td><td class="g2">0.242</td><td class="g2">0.1091</td><td class="g2">0.589</td><td class="g2">0.419</td><td class="g2">0.459</td><td class="g2">17.07</td></tr>
+<tr><td class="col-method">CycleGAN</td><td class="grp-start g1">360.7</td><td class="g1">0.522</td><td class="g1">0.3903</td><td class="g1">0.369</td><td class="g1">0.683</td><td class="g1">0.300</td><td class="g1">15.17</td><td class="grp-start g2">119.3</td><td class="g2">0.219</td><td class="g2">0.0436</td><td class="g2">0.660</td><td class="g2">0.373</td><td class="g2">0.478</td><td class="g2">16.88</td></tr>
+<tr><td class="col-method">pix2pixHD</td><td class="grp-start g1">106.0</td><td class="g1">0.254</td><td class="g1">0.0638</td><td class="g1">0.543</td><td class="g1">0.439</td><td class="g1">0.619</td><td class="g1">21.68</td><td class="grp-start g2">175.1</td><td class="g2">0.246</td><td class="g2">0.1136</td><td class="g2">0.682</td><td class="g2">0.361</td><td class="g2 second">0.525</td><td class="g2">19.21</td></tr>
+<tr><td class="col-method">SPADE</td><td class="grp-start g1">98.5</td><td class="g1">0.260</td><td class="g1">0.0646</td><td class="g1">0.504</td><td class="g1">0.501</td><td class="g1">0.562</td><td class="g1">19.81</td><td class="grp-start g2">179.7</td><td class="g2">0.242</td><td class="g2">0.1228</td><td class="g2">0.662</td><td class="g2">0.385</td><td class="g2">0.489</td><td class="g2">17.77</td></tr>
+<tr><td class="col-method">DDPM (SR3)</td><td class="grp-start g1">85.0</td><td class="g1">0.272</td><td class="g1">0.0390</td><td class="g1">0.529</td><td class="g1">0.471</td><td class="g1">0.479</td><td class="g1">13.49</td><td class="grp-start g2">219.1</td><td class="g2">0.333</td><td class="g2">0.1616</td><td class="g2">0.419</td><td class="g2">0.622</td><td class="g2">0.111</td><td class="g2">12.45</td></tr>
+<tr><td class="col-method">SD2.1 FT</td><td class="grp-start g1">67.7</td><td class="g1">0.270</td><td class="g1">0.0282</td><td class="g1">0.511</td><td class="g1">0.487</td><td class="g1">0.459</td><td class="g1">15.46</td><td class="grp-start g2">124.7</td><td class="g2">0.196</td><td class="g2">0.0537</td><td class="g2">0.612</td><td class="g2">0.348</td><td class="g2">0.513</td><td class="g2">19.29</td></tr>
+<tr><td class="col-method">BBDM</td><td class="grp-start g1">63.7</td><td class="g1">0.231</td><td class="g1">0.0245</td><td class="g1">0.613</td><td class="g1">0.418</td><td class="g1">0.601</td><td class="g1">19.08</td><td class="grp-start g2">230.2</td><td class="g2">0.381</td><td class="g2">0.1647</td><td class="g2">0.470</td><td class="g2">0.468</td><td class="g2">0.449</td><td class="g2">18.03</td></tr>
+<tr><td class="col-method">ControlNet</td><td class="grp-start g1">87.8</td><td class="g1">0.315</td><td class="g1">0.0424</td><td class="g1">0.509</td><td class="g1">0.523</td><td class="g1">0.418</td><td class="g1">12.93</td><td class="grp-start g2">131.3</td><td class="g2">0.279</td><td class="g2">0.0635</td><td class="g2">0.615</td><td class="g2">0.413</td><td class="g2">0.448</td><td class="g2">14.45</td></tr>
+<tr><td class="col-method">HI-Diff</td><td class="grp-start g1">315.5</td><td class="g1">0.556</td><td class="g1">0.3007</td><td class="g1">0.155</td><td class="g1">0.647</td><td class="g1 best">0.672</td><td class="g1 second">21.68</td><td class="grp-start g2">261.2</td><td class="g2">0.300</td><td class="g2">0.2036</td><td class="g2">0.499</td><td class="g2">0.403</td><td class="g2 best">0.589</td><td class="g2 best">20.61</td></tr>
+<tr><td class="col-method">ResShift</td><td class="grp-start g1">130.6</td><td class="g1">0.273</td><td class="g1">0.0768</td><td class="g1">0.418</td><td class="g1">0.510</td><td class="g1">0.504</td><td class="g1">19.29</td><td class="grp-start g2">155.4</td><td class="g2">0.230</td><td class="g2">0.0858</td><td class="g2">0.540</td><td class="g2">0.367</td><td class="g2">0.421</td><td class="g2">18.58</td></tr>
+<tr><td class="col-method">StegoGAN</td><td class="grp-start g1">384.7</td><td class="g1">0.550</td><td class="g1">0.4343</td><td class="g1">0.387</td><td class="g1">0.698</td><td class="g1">0.180</td><td class="g1">12.49</td><td class="grp-start g2">113.1</td><td class="g2">0.225</td><td class="g2">0.0361</td><td class="g2">0.649</td><td class="g2">0.388</td><td class="g2">0.457</td><td class="g2">16.04</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="15"><span class="group-label">SAR-to-EO image translation (SET) methods</span></td></tr>
+<tr><td class="col-method">CondDiff</td><td class="grp-start g1">113.2</td><td class="g1">0.317</td><td class="g1">0.0639</td><td class="g1">0.461</td><td class="g1">0.551</td><td class="g1">0.334</td><td class="g1">11.12</td><td class="grp-start g2">160.1</td><td class="g2">0.274</td><td class="g2">0.1012</td><td class="g2">0.514</td><td class="g2">0.517</td><td class="g2">0.198</td><td class="g2">14.68</td></tr>
+<tr><td class="col-method">E3Diff</td><td class="grp-start g1">55.5</td><td class="g1">0.228</td><td class="g1">0.0148</td><td class="g1">0.550</td><td class="g1">0.446</td><td class="g1">0.514</td><td class="g1">20.58</td><td class="grp-start g2">110.6</td><td class="g2">0.197</td><td class="g2">0.0440</td><td class="g2">0.696</td><td class="g2">0.361</td><td class="g2">0.462</td><td class="g2">18.32</td></tr>
+<tr><td class="col-method">cBBDM</td><td class="grp-start g1">52.7</td><td class="g1 second">0.191</td><td class="g1">0.0214</td><td class="g1">0.675</td><td class="g1 best">0.369</td><td class="g1 second">0.650</td><td class="g1 best">21.73</td><td class="grp-start g2">280.4</td><td class="g2">0.347</td><td class="g2">0.2620</td><td class="g2">0.450</td><td class="g2">0.419</td><td class="g2">0.447</td><td class="g2 second">19.72</td></tr>
+<tr><td class="col-method">Seg-CycleGAN</td><td class="grp-start g1">–</td><td class="g1">–</td><td class="g1">–</td><td class="g1">–</td><td class="g1">–</td><td class="g1">–</td><td class="g1">–</td><td class="grp-start g2">131.4</td><td class="g2">0.229</td><td class="g2">0.0611</td><td class="g2">0.649</td><td class="g2">0.386</td><td class="g2">0.471</td><td class="g2">16.62</td></tr>
+<tr><td class="col-method">C-DiffSET</td><td class="grp-start g1">64.0</td><td class="g1">0.252</td><td class="g1">0.0257</td><td class="g1">0.527</td><td class="g1">0.462</td><td class="g1">0.512</td><td class="g1">17.09</td><td class="grp-start g2">132.3</td><td class="g2">0.197</td><td class="g2">0.0614</td><td class="g2">0.611</td><td class="g2">0.346</td><td class="g2">0.520</td><td class="g2">19.43</td></tr>
+<tr class="ours ours--lora"><td class="col-method">GeoSET (LoRA)</td><td class="grp-start g1 second">29.5</td><td class="g1">0.202</td><td class="g1 second">0.0042</td><td class="g1 second">0.691</td><td class="g1">0.440</td><td class="g1">0.547</td><td class="g1">19.19</td><td class="grp-start g2 best">87.9</td><td class="g2 best">0.189</td><td class="g2 best">0.0162</td><td class="g2 best">0.733</td><td class="g2 best">0.338</td><td class="g2">0.513</td><td class="g2">17.95</td></tr>
+<tr class="ours ours--ft"><td class="col-method">GeoSET (full FT)</td><td class="grp-start g1 best">24.5</td><td class="g1 best">0.181</td><td class="g1 best">0.0032</td><td class="g1 best">0.730</td><td class="g1 second">0.399</td><td class="g1">0.564</td><td class="g1">19.72</td><td class="grp-start g2 second">94.1</td><td class="g2 second">0.192</td><td class="g2 second">0.0183</td><td class="g2 second">0.724</td><td class="g2 second">0.342</td><td class="g2">0.515</td><td class="g2">17.99</td></tr>
+</tbody>
+</table></div></div></div>
+
+</figure>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="panel-t8" aria-labelledby="tab-t8" tabindex="-1" hidden>
+<figure class="table-figure" id="table-8">
+<figcaption><span class="fig-label">Table 8.</span> Quantitative comparison on CAP-BSG and KOMPSAT. We retrain (evaluate) all competing methods on the same training (test) splits. <b>Bold</b> is the best, and <u>underlined</u> is the 2nd best.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-main-capbsg-kompsat-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-main-capbsg-kompsat-t0-vl" data-table="#tab-main-capbsg-kompsat-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">CAP-BSG</button><button type="button" data-view="g2" aria-pressed="false">KOMPSAT</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 8 (scrolls horizontally)"><table class="results" id="tab-main-capbsg-kompsat-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Method</th>
+<th colspan="7" scope="colgroup" class="col-group grp-start g1"><span>CAP-BSG</span></th>
+<th colspan="7" scope="colgroup" class="col-group grp-start g2"><span>KOMPSAT</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start g1">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">DISTS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">KID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">DINO<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g1">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g1">PSNR<span class="arrow">↑</span></th>
+<th scope="col" class="metric grp-start g2">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">DISTS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">KID<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">DINO<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric g2">SSIM<span class="arrow">↑</span></th>
+<th scope="col" class="metric g2">PSNR<span class="arrow">↑</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="group"><td colspan="15"><span class="group-label">General image-to-image translation methods</span></td></tr>
+<tr><td class="col-method">pix2pix</td><td class="grp-start g1">245.8</td><td class="g1">0.402</td><td class="g1">0.2086</td><td class="g1">0.254</td><td class="g1">0.626</td><td class="g1">0.251</td><td class="g1">13.77</td><td class="grp-start g2">255.6</td><td class="g2">0.346</td><td class="g2">0.2892</td><td class="g2">0.298</td><td class="g2">0.669</td><td class="g2">0.116</td><td class="g2">10.33</td></tr>
+<tr><td class="col-method">CycleGAN</td><td class="grp-start g1">100.0</td><td class="g1">0.327</td><td class="g1">0.0485</td><td class="g1">0.365</td><td class="g1">0.569</td><td class="g1">0.353</td><td class="g1">16.84</td><td class="grp-start g2">160.8</td><td class="g2">0.359</td><td class="g2">0.1105</td><td class="g2">0.299</td><td class="g2">0.653</td><td class="g2">0.139</td><td class="g2">10.14</td></tr>
+<tr><td class="col-method">pix2pixHD</td><td class="grp-start g1">212.7</td><td class="g1">0.335</td><td class="g1">0.1673</td><td class="g1">0.301</td><td class="g1">0.570</td><td class="g1">0.367</td><td class="g1 second">17.23</td><td class="grp-start g2">223.2</td><td class="g2">0.379</td><td class="g2">0.2004</td><td class="g2">0.305</td><td class="g2">0.649</td><td class="g2">0.128</td><td class="g2">11.24</td></tr>
+<tr><td class="col-method">SPADE</td><td class="grp-start g1">187.5</td><td class="g1">0.354</td><td class="g1">0.1407</td><td class="g1">0.287</td><td class="g1">0.593</td><td class="g1">0.348</td><td class="g1">16.20</td><td class="grp-start g2">226.3</td><td class="g2">0.377</td><td class="g2">0.2106</td><td class="g2">0.303</td><td class="g2">0.670</td><td class="g2">0.157</td><td class="g2">11.47</td></tr>
+<tr><td class="col-method">DDPM (SR3)</td><td class="grp-start g1">132.0</td><td class="g1">0.403</td><td class="g1">0.0815</td><td class="g1">0.297</td><td class="g1">0.646</td><td class="g1">0.373</td><td class="g1">12.41</td><td class="grp-start g2">119.8</td><td class="g2">0.344</td><td class="g2">0.0695</td><td class="g2">0.365</td><td class="g2">0.645</td><td class="g2">0.121</td><td class="g2">10.21</td></tr>
+<tr><td class="col-method">SD2.1 FT</td><td class="grp-start g1">98.6</td><td class="g1">0.348</td><td class="g1">0.0406</td><td class="g1">0.321</td><td class="g1">0.587</td><td class="g1">0.380</td><td class="g1">15.86</td><td class="grp-start g2">100.7</td><td class="g2">0.333</td><td class="g2">0.0535</td><td class="g2">0.359</td><td class="g2">0.635</td><td class="g2">0.150</td><td class="g2">11.23</td></tr>
+<tr><td class="col-method">BBDM</td><td class="grp-start g1">145.2</td><td class="g1">0.346</td><td class="g1">0.0789</td><td class="g1">0.305</td><td class="g1">0.577</td><td class="g1">0.360</td><td class="g1">16.16</td><td class="grp-start g2">154.3</td><td class="g2">0.343</td><td class="g2">0.1101</td><td class="g2">0.322</td><td class="g2">0.656</td><td class="g2">0.145</td><td class="g2">9.74</td></tr>
+<tr><td class="col-method">ControlNet</td><td class="grp-start g1">120.5</td><td class="g1">0.426</td><td class="g1">0.0466</td><td class="g1">0.290</td><td class="g1">0.660</td><td class="g1">0.303</td><td class="g1">13.10</td><td class="grp-start g2">115.5</td><td class="g2">0.358</td><td class="g2">0.0672</td><td class="g2">0.357</td><td class="g2">0.671</td><td class="g2">0.137</td><td class="g2">9.63</td></tr>
+<tr><td class="col-method">HI-Diff</td><td class="grp-start g1">200.0</td><td class="g1">0.496</td><td class="g1">0.1328</td><td class="g1">0.234</td><td class="g1">0.697</td><td class="g1 best">0.463</td><td class="g1">16.75</td><td class="grp-start g2">277.8</td><td class="g2">0.523</td><td class="g2">0.2664</td><td class="g2">0.223</td><td class="g2">0.756</td><td class="g2 best">0.226</td><td class="g2 second">12.39</td></tr>
+<tr><td class="col-method">ResShift</td><td class="grp-start g1">201.2</td><td class="g1">0.378</td><td class="g1">0.1282</td><td class="g1">0.280</td><td class="g1">0.611</td><td class="g1">0.212</td><td class="g1">15.11</td><td class="grp-start g2">247.9</td><td class="g2">0.348</td><td class="g2">0.2193</td><td class="g2">0.306</td><td class="g2">0.652</td><td class="g2">0.115</td><td class="g2">11.12</td></tr>
+<tr><td class="col-method">StegoGAN</td><td class="grp-start g1">97.3</td><td class="g1">0.319</td><td class="g1">0.0464</td><td class="g1 second">0.367</td><td class="g1">0.567</td><td class="g1">0.345</td><td class="g1">16.89</td><td class="grp-start g2">325.4</td><td class="g2">0.497</td><td class="g2">0.3565</td><td class="g2">0.222</td><td class="g2">0.713</td><td class="g2">0.092</td><td class="g2 best">12.70</td></tr>
+</tbody>
+<tbody>
+<tr class="group"><td colspan="15"><span class="group-label">SAR-to-EO image translation (SET) methods</span></td></tr>
+<tr><td class="col-method">CondDiff</td><td class="grp-start g1">212.1</td><td class="g1">0.418</td><td class="g1">0.1347</td><td class="g1">0.246</td><td class="g1">0.734</td><td class="g1">0.234</td><td class="g1">10.50</td><td class="grp-start g2">115.6</td><td class="g2">0.349</td><td class="g2">0.0672</td><td class="g2">0.352</td><td class="g2">0.692</td><td class="g2">0.082</td><td class="g2">8.70</td></tr>
+<tr><td class="col-method">E3Diff</td><td class="grp-start g1">87.2</td><td class="g1">0.324</td><td class="g1">0.0337</td><td class="g1">0.346</td><td class="g1 best">0.543</td><td class="g1">0.332</td><td class="g1">16.79</td><td class="grp-start g2">116.5</td><td class="g2">0.333</td><td class="g2">0.0762</td><td class="g2">0.388</td><td class="g2 best">0.600</td><td class="g2">0.147</td><td class="g2">11.74</td></tr>
+<tr><td class="col-method">cBBDM</td><td class="grp-start g1">214.6</td><td class="g1">0.365</td><td class="g1">0.1580</td><td class="g1">0.280</td><td class="g1">0.578</td><td class="g1 second">0.437</td><td class="g1 best">17.91</td><td class="grp-start g2">245.3</td><td class="g2">0.434</td><td class="g2">0.2300</td><td class="g2">0.279</td><td class="g2">0.666</td><td class="g2 second">0.189</td><td class="g2">11.92</td></tr>
+<tr><td class="col-method">C-DiffSET</td><td class="grp-start g1">113.0</td><td class="g1">0.333</td><td class="g1">0.0517</td><td class="g1">0.310</td><td class="g1">0.573</td><td class="g1">0.382</td><td class="g1">17.03</td><td class="grp-start g2">144.9</td><td class="g2">0.344</td><td class="g2">0.0943</td><td class="g2">0.315</td><td class="g2">0.640</td><td class="g2">0.144</td><td class="g2">11.17</td></tr>
+<tr class="ours ours--lora"><td class="col-method">GeoSET (LoRA)</td><td class="grp-start g1 second">64.7</td><td class="g1 second">0.318</td><td class="g1 second">0.0154</td><td class="g1 best">0.402</td><td class="g1">0.566</td><td class="g1">0.343</td><td class="g1">16.85</td><td class="grp-start g2 second">72.0</td><td class="g2 second">0.299</td><td class="g2 second">0.0294</td><td class="g2 second">0.446</td><td class="g2">0.625</td><td class="g2">0.152</td><td class="g2">10.64</td></tr>
+<tr class="ours ours--ft"><td class="col-method">GeoSET (full FT)</td><td class="grp-start g1 best">58.9</td><td class="g1 best">0.316</td><td class="g1 best">0.0109</td><td class="g1 best">0.402</td><td class="g1 second">0.565</td><td class="g1">0.352</td><td class="g1">16.60</td><td class="grp-start g2 best">69.8</td><td class="g2 best">0.295</td><td class="g2 best">0.0292</td><td class="g2 best">0.447</td><td class="g2 second">0.620</td><td class="g2">0.153</td><td class="g2">10.78</td></tr>
+</tbody>
+</table></div></div></div>
+
+</figure>
+        </div>
+      </div>
+
+      <div class="disclosures">
+      <details class="disclosure" id="corpus" data-animate>
+        <summary>Pretraining corpus <span class="summary-sub">Table 1</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+<figure class="table-figure" id="table-1">
+<figcaption><span class="fig-label">Table 1.</span> <b>Stage 2 SAR–EO pretraining corpus.</b> Drop rates are computed relative to the original SAR sample counts and include source-specific pair eligibility selection and quality filtering. Crop-equivalent counts account for native image size and redundancy and determine the source sampling mixture.</figcaption>
+<div class="table-meta"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 1 (scrolls horizontally)"><table class="results results--num-right" id="tab-pretrain-corpus-t0">
+<thead>
+<tr>
+<th scope="col" class="col-method">Source</th>
+<th scope="col" class="metric">Orig. samples</th>
+<th scope="col" class="metric">Kept pairs</th>
+<th scope="col" class="metric">Drop (%)</th>
+<th scope="col" class="metric">Crop equivalents</th>
+<th scope="col" class="metric">Mix (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">GUSO</td><td>589,143</td><td>585,424</td><td>0.63</td><td>2,341,696</td><td>38.73</td></tr>
+<tr><td class="col-method">TerraMesh</td><td>8,194,048</td><td>1,741,434</td><td>78.75</td><td>1,741,434</td><td>28.80</td></tr>
+<tr><td class="col-method">SARLO-80</td><td>87,870</td><td>77,932</td><td>11.31</td><td>1,246,912</td><td>20.62</td></tr>
+<tr><td class="col-method">SAR-1M</td><td>1,130,379</td><td>688,458</td><td>39.09</td><td>688,458</td><td>11.39</td></tr>
+<tr><td class="col-method">3MOS</td><td>113,074</td><td>111,496</td><td>1.40</td><td>27,874</td><td>0.46</td></tr>
+<tr class="total"><td class="col-method">Total</td><td>10,114,514</td><td>3,204,744</td><td>68.32</td><td>6,046,374</td><td>100.00</td></tr>
+</tbody>
+</table></div></div></div>
+
+</figure>
+        </div></div>
+      </details>
+      <details class="disclosure" id="ablations" data-animate>
+        <summary>Ablations and analysis <span class="summary-sub">Tables 5, 4 and 7</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <div class="stack stack--tables">
+<figure class="table-figure" id="table-5">
+<figcaption><span class="fig-label">Table 5.</span> <b>Cumulative component comparison on SAR2EO and SpaceNet6.</b></figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 5 (scrolls horizontally)"><table class="results" id="tab-ablation-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Configuration</th>
+<th colspan="3" scope="colgroup" class="col-group grp-start"><span>SAR2EO</span></th>
+<th colspan="3" scope="colgroup" class="col-group grp-start"><span>SpaceNet6</span></th>
+</tr>
+<tr>
+<th scope="col" class="metric grp-start">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric">DISTS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">LPIPS<span class="arrow">↓</span></th>
+<th scope="col" class="metric grp-start">FID<span class="arrow">↓</span></th>
+<th scope="col" class="metric">DISTS<span class="arrow">↓</span></th>
+<th scope="col" class="metric">LPIPS<span class="arrow">↓</span></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">SD2.1 Full FT</td><td class="grp-start">67.7</td><td>0.270</td><td>0.487</td><td class="grp-start">124.7</td><td>0.196</td><td>0.348</td></tr>
+</tbody>
+<tbody>
+<tr><td class="col-method">FLUX.2 LoRA (Backbone)</td><td class="grp-start">71.2</td><td>0.275</td><td>0.481</td><td class="grp-start">117.4</td><td>0.201</td><td>0.361</td></tr>
+<tr><td class="col-method">+ Pretraining corpus</td><td class="grp-start">50.5</td><td>0.250</td><td>0.470</td><td class="grp-start">107.9</td><td>0.194</td><td>0.351</td></tr>
+<tr><td class="col-method">+ SAR encoder</td><td class="grp-start">39.8</td><td>0.220</td><td>0.448</td><td class="grp-start">94.2</td><td>0.193</td><td>0.347</td></tr>
+<tr class="ours ours--lora"><td class="col-method">+ Speckle aug. (<b>GeoSET</b>)</td><td class="grp-start best">29.5</td><td class="best">0.202</td><td class="best">0.440</td><td class="grp-start best">87.9</td><td class="best">0.189</td><td class="best">0.338</td></tr>
+</tbody>
+</table></div></div></div>
+<p class="table-note">Each step improves FID, DISTS and LPIPS on both datasets (SAR2EO FID <span class="nowrap">71.2&thinsp;&rarr;&thinsp;50.5&thinsp;&rarr;&thinsp;39.8&thinsp;&rarr;&thinsp;<b>29.5</b></span>). The last row is the complete <b>GeoSET (LoRA)</b> configuration, as in Table&nbsp;3.</p>
+</figure>
+
+<figure class="table-figure" id="table-4">
+<figcaption><span class="fig-label">Table 4.</span> <b>Stage 1 encoder diagnostics and Stage 3 adaptation efficiency.</b> (a) Reconstruction PSNR on original and perturbed SAR inputs before and after encoder training. EO reports reconstruction with the frozen pretrained codec. (b) Computational costs of full fine-tuning and LoRA.</figcaption>
+<div class="table-meta"><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div class="table-pair"><div><p class="table-subcap">(a) Stage 1 Encoder Reconstruction</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 4 (a) (scrolls horizontally)"><table class="results" id="tab-encoder-adaptation-t0">
+<thead>
+<tr>
+<th rowspan="2" scope="col" class="col-method">Source</th>
+<th colspan="3" scope="colgroup" class="col-group grp-start"><span>Original SAR</span></th>
+<th colspan="3" scope="colgroup" class="col-group grp-start"><span>Perturbed SAR</span></th>
+<th rowspan="2" scope="col" class="metric grp-start">EO</th>
+</tr>
+<tr>
+<th scope="col" class="sub grp-start">Before</th>
+<th scope="col" class="sub">After</th>
+<th scope="col" class="sub">Δ</th>
+<th scope="col" class="sub grp-start">Before</th>
+<th scope="col" class="sub">After</th>
+<th scope="col" class="sub">Δ</th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">GUSO</td><td class="grp-start">27.47</td><td>29.18</td><td>+1.71</td><td class="grp-start">23.54</td><td>26.96</td><td>+3.42</td><td class="grp-start">31.02</td></tr>
+<tr><td class="col-method">TerraMesh</td><td class="grp-start">20.11</td><td>32.04</td><td>+11.93</td><td class="grp-start">19.12</td><td>30.48</td><td>+11.37</td><td class="grp-start">33.95</td></tr>
+<tr><td class="col-method">SARLO-80</td><td class="grp-start">17.39</td><td>19.21</td><td>+1.82</td><td class="grp-start">16.71</td><td>18.49</td><td>+1.78</td><td class="grp-start">27.81</td></tr>
+<tr><td class="col-method">SAR-1M</td><td class="grp-start">29.95</td><td>31.25</td><td>+1.30</td><td class="grp-start">22.01</td><td>26.99</td><td>+4.98</td><td class="grp-start">33.59</td></tr>
+<tr><td class="col-method">3MOS</td><td class="grp-start">35.15</td><td>36.07</td><td>+0.92</td><td class="grp-start">27.30</td><td>31.92</td><td>+4.61</td><td class="grp-start">34.62</td></tr>
+<tr class="total"><td class="col-method">Average</td><td class="grp-start">26.01</td><td>29.55</td><td>+3.54</td><td class="grp-start">21.74</td><td>26.97</td><td>+5.23</td><td class="grp-start">32.20</td></tr>
+</tbody>
+</table></div></div></div><div><p class="table-subcap">(b) Downstream Adaptation Efficiency</p><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 4 (b) (scrolls horizontally)"><table class="results" id="tab-encoder-adaptation-t1">
+<thead>
+<tr>
+<th scope="col" class="col-method">GeoSET</th>
+<th scope="col" class="metric">Full FT</th>
+<th scope="col" class="metric">LoRA</th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">Trainable parameters</td><td>3.852B</td><td>23.10M</td></tr>
+<tr><td class="col-method">Trainable fraction</td><td>100%</td><td>0.5997%</td></tr>
+<tr><td class="col-method">Per-dataset storage</td><td>30.8 GB</td><td>185 MB</td></tr>
+<tr><td class="col-method">Peak memory</td><td>96.9 GB</td><td>49.1 GB</td></tr>
+<tr><td class="col-method">Batch size</td><td>16</td><td>16</td></tr>
+<tr><td class="col-method">Throughput</td><td>67 img/s</td><td>94 img/s</td></tr>
+<tr><td class="col-method">Wall time/dataset</td><td>1.34 h</td><td>0.98 h</td></tr>
+</tbody>
+</table></div></div></div></div>
+<p class="table-note"><b>(a)</b> Encoder training raises average SAR PSNR by <b>+3.54&nbsp;dB</b> on original and <b>+5.23&nbsp;dB</b> on perturbed inputs. <b>(b)</b> LoRA trains 23.10M parameters (0.5997%), stores 185&nbsp;MB instead of 30.8&nbsp;GB and takes 0.98&nbsp;h per dataset.</p>
+</figure>
+
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/encoder_recon_full.jpg" data-title="SAR and EO reconstruction across pretraining sources">
+              <img src="static/images/encoder_recon_1600.jpg" width="1600" height="508" loading="lazy" decoding="async"
+                   alt="Reconstructions from the adapted SAR encoder and the frozen EO encoder on six pretraining streams (GUSO, TerraMesh, SARLO-80, SAR-1M, 3MOS-MR, 3MOS-HR). Top row: SAR and EO reconstructions with PSNR values. Bottom row: speckle-perturbed SAR input at L = 4 and its reconstruction, with PSNR values.">
+            </a>
+            <figcaption><b>SAR and EO reconstruction across pretraining sources.</b> Top: reconstructions of original SAR and EO; bottom: speckle-perturbed SAR (<i>L</i>&nbsp;=&nbsp;4, left) and its reconstruction (right). Values are PSNR (dB) relative to the original observations; values in parentheses are for the perturbed inputs.</figcaption>
+          </figure>
+
+<figure class="table-figure" id="table-7">
+<figcaption><span class="fig-label">Table 7.</span> <b>SAR conditioning intervention on pretraining sources.</b> True denotes the corresponding SAR observation, shuffled uses a mismatched SAR observation, and null uses an all-zero SAR latent. The null condition is included during training through conditioning dropout.</figcaption>
+<div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
+<div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 7 (scrolls horizontally)"><table class="results" id="tab-condition-intervention-t0">
+<thead>
+<tr>
+<th class="col-method"></th>
+<th colspan="3" scope="colgroup" class="col-group grp-start"><span>PSNR<span class="arrow">↑</span></span></th>
+<th colspan="3" scope="colgroup" class="col-group grp-start"><span>LPIPS<span class="arrow">↓</span></span></th>
+</tr>
+<tr>
+<th scope="col" class="col-method">Source</th>
+<th scope="col" class="sub grp-start">True</th>
+<th scope="col" class="sub">Shuffled</th>
+<th scope="col" class="sub">Null</th>
+<th scope="col" class="sub grp-start">True</th>
+<th scope="col" class="sub">Shuffled</th>
+<th scope="col" class="sub">Null</th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="col-method">GUSO</td><td class="grp-start best">13.36</td><td>10.24</td><td>10.58</td><td class="grp-start best">0.548</td><td>0.678</td><td>0.690</td></tr>
+<tr><td class="col-method">SARLO-80</td><td class="grp-start best">15.88</td><td>11.96</td><td>11.65</td><td class="grp-start best">0.514</td><td>0.678</td><td>0.693</td></tr>
+<tr><td class="col-method">TerraMesh</td><td class="grp-start best">13.69</td><td>10.94</td><td>10.80</td><td class="grp-start best">0.491</td><td>0.670</td><td>0.695</td></tr>
+</tbody>
+</table></div></div></div>
+<p class="table-note">True SAR conditioning is best on PSNR and LPIPS for all three pretraining sources.</p>
+</figure>
+          </div>
+        </div></div>
+      </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method (compact) -->
+  <section class="section section--band" id="method" aria-labelledby="method-title">
+    <div class="container container--wide">
+      <header class="section-head">
+        <h2 class="section-title" id="method-title">Three stages, one parent</h2>
+      </header>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/framework_full.jpg" data-title="GeoSET framework">
+          <img src="static/images/framework_1600.jpg"
+               srcset="static/images/framework_1200.jpg 1200w, static/images/framework_1600.jpg 1600w, static/images/framework_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="1600" height="729" loading="lazy" decoding="async"
+               alt="GeoSET framework. Top: multi-source SAR-EO pretraining corpus (GUSO, TerraMesh, SARLO-80, SAR-1M, 3MOS) and the downstream SET benchmarks. Stage 1: speckle-robust SAR representation pretraining with a frozen EO decoder. Stage 2: generalist SAR-to-EO pretraining of a DiT with flow matching, conditioned on the SAR latent. Stage 3: downstream adaptation with LoRA or full fine-tuning.">
+        </a>
+        <figcaption><b>GeoSET framework.</b> Stages&nbsp;1&ndash;2 build one generalist parent; Stage&nbsp;3 adapts it to each benchmark.</figcaption>
+      </figure>
+      <ol class="keypoints">
+        <li><span class="kp-num">Stage 1</span><b>Speckle-robust SAR encoder.</b> Reconstructs SAR from speckle-perturbed input through a frozen decoder.</li>
+        <li><span class="kp-num">Stage 2</span><b>Generalist FLUX.2 pretraining.</b> The generator, conditioned on SAR instead of text, is pretrained on over 3M curated <span class="nowrap">SAR&ndash;EO</span> pairs.</li>
+        <li><span class="kp-num">Stage 3</span><b>Per-benchmark adaptation.</b> LoRA (0.60% of generator parameters, &asymp;1&nbsp;h per dataset) or full fine-tuning.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- BibTeX -->
+  <section class="section" id="bibtex" aria-labelledby="bibtex-title">
+    <div class="container">
+      <header class="section-head">
+        <h2 class="section-title" id="bibtex-title">BibTeX</h2>
+      </header>
+      <div class="bibtex">
+        <div class="bibtex-head">
+          <button class="copy-btn" type="button" data-copy="#bibtex-code">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
+        </div>
+<pre><code id="bibtex-code">@article{do2026geoset,
+  title={GeoSET: Generalist Foundation Model for SAR-to-EO Image Translation},
+  author={Do, Jeonghyeok and Kim, Munchurl},
+  journal={arXiv preprint arXiv:XXXX.XXXXX},
+  year={2026}
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p class="footer-meta"><span class="footer-brand"><img src="static/images/icon.svg" width="22" height="22" alt="" loading="lazy"><span class="wordmark">Geo<span>SET</span></span></span>&nbsp;&middot; arXiv preprint, 2026&nbsp;&middot; Korea Advanced Institute of Science and Technology (KAIST)</p>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank" rel="noopener">arXiv</a>
+      <a href="https://github.com/KAIST-VICLab/GeoSET" target="_blank" rel="noopener">Code</a>
+      <a href="mailto:ehwjdgur0913@kaist.ac.kr,mkimee@kaist.ac.kr">Contact</a>
+      <a href="#top">Back to top &uarr;</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
