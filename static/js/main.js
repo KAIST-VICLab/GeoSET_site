@@ -73,7 +73,8 @@
   /* ------------------------------------------------------------------
    * Carousel  [data-carousel] > .carousel-viewport > .carousel-track
    *    > .carousel-slide.  Controls are generated: counter "Scene k / N",
-   *    dots, prev/next.  Keyboard arrows when focus is inside; swipe.
+   *    dots, prev/next.  Keyboard arrows when focus is inside (or, for the
+   *    gallery, when nothing is focused and it fills mid-screen); swipe.
    * ------------------------------------------------------------------ */
   function initCarousels() {
     $$('[data-carousel]').forEach(function (root) {
@@ -154,6 +155,7 @@
         eager(index);
       }
       root.carouselGo = go;
+      root.carouselStep = function (d) { go(index + d); };
 
       $('.carousel-prev', controls).addEventListener('click', function () { go(index - 1); });
       $('.carousel-next', controls).addEventListener('click', function () { go(index + 1); });
@@ -201,6 +203,24 @@
       }, true);
 
       go(0);
+    });
+
+    // The hint promises arrow keys: honour them while the gallery fills the middle of the screen and
+    // focus is on nothing in particular (after scrolling there), not only once the carousel is focused.
+    var gallery = document.getElementById('gallery');
+    if (!gallery) return;
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      var a = document.activeElement;
+      if (a && a !== document.body && a !== document.documentElement) return;
+      if (document.querySelector('dialog[open]')) return;
+      var r = gallery.getBoundingClientRect(), mid = window.innerHeight / 2;
+      if (r.top > mid || r.bottom < mid) return;
+      var c = $('.tabpanel:not([hidden]) [data-carousel]', gallery);
+      if (!c || !c.carouselStep) return;
+      e.preventDefault();
+      c.carouselStep(e.key === 'ArrowLeft' ? -1 : 1);
     });
   }
 
@@ -397,7 +417,10 @@
 
   /* Dataset view toggle: <div class="view-toggle" data-table="#id"> with
    * buttons data-view="all|g1|g2"; the table's .g1/.g2 cells are hidden
-   * through a class on the table (nothing is removed from the DOM). */
+   * through a class on the table (nothing is removed from the DOM).
+   * Both datasets need ~1160px, wider than the table column beside the
+   * radar at any width, so with JavaScript each table opens on its first
+   * dataset (one tap away from the other or both); without it, both show. */
   function initViewToggles() {
     $$('.view-toggle[data-table]').forEach(function (group) {
       var table = $(group.getAttribute('data-table'));
@@ -411,6 +434,7 @@
         if (sc) { sc.scrollLeft = 0; sc.dispatchEvent(new Event('table:update')); }
       }
       btns.forEach(function (b) { b.addEventListener('click', function () { set(b.getAttribute('data-view')); }); });
+      set('g1');
     });
   }
 

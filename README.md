@@ -22,14 +22,15 @@ python3 -m http.server 8000
 ## Layout
 
 ```
-index.html                the page (results first: headline figures, interactive gallery, quantitative results, then a compact method overview)
-static/css/family.css     styles shared with the GeoSET, GeoCR and MotionMaestro pages (the same file on all three)
-static/js/family.js       scripts shared with those pages: navigation, abstract toggle, pending links, BibTeX copy,
-                          image lightbox, tabs, table scroll cues
+index.html                the page (results first: headline figure, interactive gallery, quantitative results, then a compact method overview)
+static/css/family.css     styles shared by every page in the family (byte-identical copies)
+static/js/family.js       scripts shared by every page in the family (byte-identical copies): navigation, abstract toggle,
+                          pending links, BibTeX copy, image lightbox, tabs, table scroll cues
 static/css/style.css      GeoSET brand colours (top of the file) and the gallery, comparison slider, radar and table view toggle
 static/js/main.js         interactive gallery (tile strips in carousels), comparison slider, table view toggle
 static/images/            figures (web size + *_full.jpg for the lightbox), radar.png, og.jpg (social preview) and the logo files
 static/tiles/             per-method image tiles for the interactive gallery
+static/paper/GeoSET.pdf   the paper PDF opened by the Paper buttons
 ```
 
 ## Logo
@@ -41,7 +42,8 @@ colours (ink `#1C2738`, blue `#1B6FCB`).
 
 ## arXiv link
 
-The arXiv ID is not assigned yet. Until it is, the Paper and arXiv buttons, the navigation bar's Paper link, the footer's
-arXiv link and the BibTeX entry hold a placeholder ID; a link that holds it is shown as pending (the Paper and arXiv buttons
-carry a "soon" badge) and does not navigate, with or without JavaScript. The arXiv link will be added once the paper is on arXiv: replacing the placeholder in
-`index.html` with the real ID is enough, and the links then work as normal links. No CSS or JavaScript file needs editing.
+The arXiv ID is not assigned yet. Until it is, the arXiv button, the footer's arXiv link and the BibTeX entry hold a
+placeholder ID; a link that holds it is shown as pending (the arXiv button carries a "soon" badge) and does not navigate,
+with or without JavaScript. The Paper button and the navigation bar's Paper link open the hosted PDF,
+`static/paper/GeoSET.pdf`. Once the paper is on arXiv, replacing the placeholder in `index.html` with the real ID is
+enough; the links then work as normal links, and no CSS or JavaScript file needs editing.

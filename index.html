@@ -61,11 +61,26 @@
       <a href="#method">Method</a>
       <a href="#bibtex">BibTeX</a>
     </div>
-    <a class="topnav-cta" href="https://arxiv.org/pdf/XXXX.XXXXX" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+    <a class="topnav-cta" href="static/paper/GeoSET.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
   </div>
 </nav>
 
 <header class="hero" id="top">
+<!-- lineage-menu:start -->
+<details class="lineage-menu">
+  <summary class="lineage-menu-btn">More research<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+  <nav class="lineage-menu-panel" aria-label="Research line: Remote sensing">
+    <p class="lineage-menu-head"><b>Research line</b>Remote sensing</p>
+    <ol class="lineage-menu-list">
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/PAN-Crafter_site/"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/C-DiffSET_site/"><span class="lineage-name">C-DiffSET</span><span class="lineage-venue">IEEE TCSVT 2026</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoCore-9B_site/"><span class="lineage-name">GeoCore-9B</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-menu-stage"><a class="lineage-menu-item" href="https://kaist-viclab.github.io/ReFlowSET_site/"><span class="lineage-name">ReFlowSET</span><span class="lineage-venue">arXiv 2026</span></a><span class="lineage-menu-item is-current" aria-current="page"><span class="lineage-name">GeoSET</span><span class="lineage-venue">arXiv 2026</span></span><a class="lineage-menu-item" href="https://kaist-viclab.github.io/GeoCR_site/"><span class="lineage-name">GeoCR</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </nav>
+</details>
+<!-- lineage-menu:end -->
   <div class="container">
     <h1 class="hero-h1">
       <img class="hero-logo" src="static/images/logo.svg" width="1656" height="410" alt="GeoSET:" fetchpriority="high">
@@ -79,7 +94,7 @@
     <p class="hero-notes"><span><sup>&dagger;</sup>&thinsp;Corresponding author</span><span class="mono mail"><a href="mailto:ehwjdgur0913@kaist.ac.kr">ehwjdgur0913@kaist.ac.kr</a><a href="mailto:mkimee@kaist.ac.kr">mkimee@kaist.ac.kr</a></span></p>
     <p class="venue-pill">arXiv preprint, 2026</p>
     <nav class="btn-row" aria-label="Paper resources">
-      <a class="btn" href="https://arxiv.org/pdf/XXXX.XXXXX" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
+      <a class="btn" href="static/paper/GeoSET.pdf" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-paper"/></svg>Paper</a>
       <a class="btn" href="https://arxiv.org/abs/XXXX.XXXXX" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-arxiv"/></svg>arXiv</a>
       <a class="btn" href="https://github.com/KAIST-VICLab/GeoSET" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg>Code</a>
       <a class="btn" href="#gallery"><svg class="icon" aria-hidden="true"><use href="#i-gallery"/></svg>Gallery</a>
@@ -100,35 +115,38 @@
 
 <main id="main">
 
-  <!-- Headline + qualitative results: paper Fig. 1 (benchmark rows without the internal dataset) and Fig. 5 -->
+  <!-- Headline + qualitative results: paper Fig. 1 (benchmark rows without the internal dataset); Fig. 5 in a disclosure below it -->
   <section class="section section--headline" aria-labelledby="headline-title">
     <div class="container container--wide">
       <header class="section-head">
         <h2 class="section-title" id="headline-title">Pretrain once, adapt to many</h2>
         <p class="lead">One parent model, pretrained on 3M+ curated <span class="nowrap">SAR&ndash;EO</span> pairs, adapted to each benchmark with LoRA or full fine-tuning.</p>
       </header>
-      <div class="result-figs">
-        <figure class="figure">
-          <a class="figure-media zoom" href="static/images/teaser_full.jpg" data-title="Qualitative comparison on SAR-to-EO image translation benchmarks">
-            <img src="static/images/teaser_1600.jpg"
-                 srcset="static/images/teaser_1200.jpg 1200w, static/images/teaser_1600.jpg 1600w, static/images/teaser_2000.jpg 2000w"
-                 sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
-                 width="1600" height="949" fetchpriority="high" decoding="async"
-                 alt="Grid with five benchmark rows (QXS-SAROPT, SAR2Opt, SAR2EO, SpaceNet6, CAP-BSG) and nine columns: input SAR, SD2.1 fine-tuning, BBDM, E3Diff, cBBDM, C-DiffSET, GeoSET with LoRA, GeoSET with full fine-tuning, and ground-truth EO.">
-          </a>
-          <figcaption><b>Qualitative comparison on SAR-to-EO image translation benchmarks.</b> Columns (g)&ndash;(h): GeoSET with LoRA and full fine-tuning; (i): ground-truth EO.</figcaption>
-        </figure>
-        <figure class="figure">
-          <a class="figure-media zoom" href="static/images/qualitative_full.jpg" data-title="Qualitative comparison on SET benchmarks">
-            <img src="static/images/qualitative_2000.jpg"
-                 srcset="static/images/qualitative_1200.jpg 1200w, static/images/qualitative_2000.jpg 2000w"
-                 sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
-                 width="2000" height="963" loading="lazy" decoding="async"
-                 alt="Grid with four benchmark rows (QXS-SAROPT, SAR2Opt, SAR2EO, SpaceNet6) and nine columns: input SAR, SD2.1 FT, BBDM, E3Diff, cBBDM, C-DiffSET, GeoSET LoRA, GeoSET full FT, and ground-truth EO.">
-          </a>
-          <figcaption><b>Qualitative comparison on QXS-SAROPT, SAR2Opt, SAR2EO and SpaceNet6.</b> All methods receive the same SAR observation; columns as above.</figcaption>
-        </figure>
-      </div>
+      <figure class="figure">
+        <a class="figure-media zoom" href="static/images/teaser_full.jpg" data-title="Qualitative comparison on SAR-to-EO image translation benchmarks">
+          <img src="static/images/teaser_1600.jpg"
+               srcset="static/images/teaser_1200.jpg 1200w, static/images/teaser_1600.jpg 1600w, static/images/teaser_2000.jpg 2000w"
+               sizes="(min-width: 1304px) 1240px, calc(100vw - 2 * clamp(16px, 4vw, 32px))"
+               width="1600" height="949" fetchpriority="high" decoding="async"
+               alt="Grid with five benchmark rows (QXS-SAROPT, SAR2Opt, SAR2EO, SpaceNet6, CAP-BSG) and nine columns: input SAR, SD2.1 fine-tuning, BBDM, E3Diff, cBBDM, C-DiffSET, GeoSET with LoRA, GeoSET with full fine-tuning, and ground-truth EO.">
+        </a>
+        <figcaption><b>Qualitative comparison on SAR-to-EO image translation benchmarks.</b> Columns (g)&ndash;(h): GeoSET with LoRA and full fine-tuning; (i): ground-truth EO.</figcaption>
+      </figure>
+      <details class="disclosure more-figs" id="more-scenes" data-animate>
+        <summary>More scenes <span class="summary-sub">Fig.&nbsp;5 &middot; four benchmarks</span></summary>
+        <div class="disclosure-panel"><div class="disclosure-body">
+          <figure class="figure">
+            <a class="figure-media zoom" href="static/images/qualitative_full.jpg" data-title="Qualitative comparison on SET benchmarks">
+              <img src="static/images/qualitative_2000.jpg"
+                   srcset="static/images/qualitative_1200.jpg 1200w, static/images/qualitative_2000.jpg 2000w"
+                   sizes="(min-width: 1304px) 1204px, calc(100vw - 2 * clamp(16px, 4vw, 32px) - 28px)"
+                   width="2000" height="963" loading="lazy" decoding="async"
+                   alt="Grid with four benchmark rows (QXS-SAROPT, SAR2Opt, SAR2EO, SpaceNet6) and nine columns: input SAR, SD2.1 FT, BBDM, E3Diff, cBBDM, C-DiffSET, GeoSET LoRA, GeoSET full FT, and ground-truth EO.">
+            </a>
+            <figcaption><b>Qualitative comparison on QXS-SAROPT, SAR2Opt, SAR2EO and SpaceNet6.</b> All methods receive the same SAR observation.</figcaption>
+          </figure>
+        </div></div>
+      </details>
     </div>
   </section>
 
@@ -188,27 +206,26 @@
         <p class="lead">Across full fine-tuning and LoRA, GeoSET achieves the best reported <b>FID on all six benchmarks</b> and the best <b>DISTS on five</b>.</p>
       </header>
 
-      <div class="radar-row">
-        <figure class="figure radar-fig">
-          <a class="figure-media figure-media--plain zoom" href="static/images/radar.png" data-title="Cross-dataset comparison">
-            <img src="static/images/radar.png" width="1342" height="1460" loading="lazy" decoding="async"
-                 alt="Radar chart of FID and DISTS on QXS-SAROPT, SAR2Opt, SAR2EO, SpaceNet6, CAP-BSG and KOMPSAT, normalized per dataset and metric, for CondDiff, E3Diff, cBBDM, C-DiffSET, GeoSET (LoRA) and GeoSET (full FT). The two GeoSET curves are the outermost on most axes.">
-          </a>
-          <figcaption><b>Cross-dataset comparison.</b> FID and DISTS per benchmark, normalized as 100&thinsp;&times;&thinsp;best/value (outer ring = best). FID and DISTS are the primary metrics.</figcaption>
-        </figure>
-      </div>
+      <div class="bench">
+          <figure class="figure radar-fig">
+            <a class="figure-media figure-media--plain zoom" href="static/images/radar.png" data-title="Cross-dataset comparison">
+              <img src="static/images/radar.png" width="1342" height="1460" loading="lazy" decoding="async"
+                   alt="Radar chart of FID and DISTS on QXS-SAROPT, SAR2Opt, SAR2EO, SpaceNet6, CAP-BSG and KOMPSAT, normalized per dataset and metric, for CondDiff, E3Diff, cBBDM, C-DiffSET, GeoSET (LoRA) and GeoSET (full FT). The two GeoSET curves are the outermost on most axes.">
+            </a>
+            <figcaption><b>Cross-dataset comparison.</b> FID and DISTS per benchmark, normalized as 100&thinsp;&times;&thinsp;best/value (outer ring = best). FID and DISTS are the primary metrics.</figcaption>
+          </figure>
 
-      <div class="tabs" id="tables">
-        <div class="tabs-head">
-          <div class="tablist" role="tablist" aria-label="Results tables">
-            <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="true">Table 2<small>QXS-SAROPT &amp; SAR2Opt</small></button>
-            <button class="tab" role="tab" type="button" id="tab-t3" aria-controls="panel-t3" aria-selected="false">Table 3<small>SAR2EO &amp; SpaceNet6</small></button>
-            <button class="tab" role="tab" type="button" id="tab-t8" aria-controls="panel-t8" aria-selected="false">Table 8<small>CAP-BSG &amp; KOMPSAT</small></button>
+        <div class="tabs" id="tables">
+          <div class="tabs-head">
+            <div class="tablist" role="tablist" aria-label="Results tables">
+              <button class="tab" role="tab" type="button" id="tab-t2" aria-controls="panel-t2" aria-selected="true">Table 2<small>QXS-SAROPT &amp; SAR2Opt</small></button>
+              <button class="tab" role="tab" type="button" id="tab-t3" aria-controls="panel-t3" aria-selected="false">Table 3<small>SAR2EO &amp; SpaceNet6</small></button>
+              <button class="tab" role="tab" type="button" id="tab-t8" aria-controls="panel-t8" aria-selected="false">Table 8<small>CAP-BSG &amp; KOMPSAT</small></button>
+            </div>
           </div>
-        </div>
-        <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1">
+          <div class="tabpanel" role="tabpanel" id="panel-t2" aria-labelledby="tab-t2" tabindex="-1">
 <figure class="table-figure" id="table-2">
-<figcaption><span class="fig-label">Table 2.</span> Quantitative comparison on QXS-SAROPT and SAR2Opt. We retrain (evaluate) all competing methods on the same training (test) splits. <b>Bold</b> and <u>underlined</u> values indicate the best and second-best results, respectively.</figcaption>
+<figcaption><span class="fig-label">Table 2.</span> <b>Quantitative comparison on QXS-SAROPT and SAR2Opt.</b> We retrain (evaluate) all competing methods on the same training (test) splits.</figcaption>
 <div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-main-qxs-sar2opt-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-main-qxs-sar2opt-t0-vl" data-table="#tab-main-qxs-sar2opt-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">QXS-SAROPT</button><button type="button" data-view="g2" aria-pressed="false">SAR2Opt</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
 <div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 2 (scrolls horizontally)"><table class="results" id="tab-main-qxs-sar2opt-t0">
 <thead>
@@ -261,10 +278,10 @@
 </table></div></div></div>
 
 </figure>
-        </div>
-        <div class="tabpanel" role="tabpanel" id="panel-t3" aria-labelledby="tab-t3" tabindex="-1" hidden>
+          </div>
+          <div class="tabpanel" role="tabpanel" id="panel-t3" aria-labelledby="tab-t3" tabindex="-1" hidden>
 <figure class="table-figure" id="table-3">
-<figcaption><span class="fig-label">Table 3.</span> Quantitative comparison on SAR2EO and SpaceNet6. We retrain (evaluate) all competing methods on the same training (test) splits. <b>Bold</b> is the best, and <u>underlined</u> is the 2nd best.</figcaption>
+<figcaption><span class="fig-label">Table 3.</span> <b>Quantitative comparison on SAR2EO and SpaceNet6.</b> We retrain (evaluate) all competing methods on the same training (test) splits.</figcaption>
 <div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-main-sar2eo-spacenet6-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-main-sar2eo-spacenet6-t0-vl" data-table="#tab-main-sar2eo-spacenet6-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">SAR2EO</button><button type="button" data-view="g2" aria-pressed="false">SpaceNet6</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
 <div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 3 (scrolls horizontally)"><table class="results" id="tab-main-sar2eo-spacenet6-t0">
 <thead>
@@ -317,10 +334,10 @@
 </table></div></div></div>
 
 </figure>
-        </div>
-        <div class="tabpanel" role="tabpanel" id="panel-t8" aria-labelledby="tab-t8" tabindex="-1" hidden>
+          </div>
+          <div class="tabpanel" role="tabpanel" id="panel-t8" aria-labelledby="tab-t8" tabindex="-1" hidden>
 <figure class="table-figure" id="table-8">
-<figcaption><span class="fig-label">Table 8.</span> Quantitative comparison on CAP-BSG and KOMPSAT. We retrain (evaluate) all competing methods on the same training (test) splits. <b>Bold</b> is the best, and <u>underlined</u> is the 2nd best.</figcaption>
+<figcaption><span class="fig-label">Table 8.</span> <b>Quantitative comparison on CAP-BSG and KOMPSAT.</b> We retrain (evaluate) all competing methods on the same training (test) splits.</figcaption>
 <div class="table-meta"><div class="table-legend"><span><span class="best">Bold</span> best</span><span><span class="second">Underline</span> second best</span><span>&darr; lower is better &middot; &uarr; higher is better</span></div><div class="view-toggle-wrap"><span class="view-toggle-label" id="tab-main-capbsg-kompsat-t0-vl">Show</span><div class="view-toggle" role="group" aria-labelledby="tab-main-capbsg-kompsat-t0-vl" data-table="#tab-main-capbsg-kompsat-t0"><button type="button" data-view="all" aria-pressed="true">Both</button><button type="button" data-view="g1" aria-pressed="false">CAP-BSG</button><button type="button" data-view="g2" aria-pressed="false">KOMPSAT</button></div></div><span class="table-hint"><svg class="icon" aria-hidden="true"><use href="#i-swipe"/></svg>Scroll for more columns</span></div>
 <div><div class="table-frame"><div class="table-scroll" tabindex="0" role="region" aria-label="Table 8 (scrolls horizontally)"><table class="results" id="tab-main-capbsg-kompsat-t0">
 <thead>
@@ -372,6 +389,7 @@
 </table></div></div></div>
 
 </figure>
+          </div>
         </div>
       </div>
 
@@ -577,10 +595,40 @@
   year={2026}
 }</code></pre>
       </div>
+      <div class="bibtex bibtex--prior">
+        <div class="bibtex-head">
+          <span class="bibtex-label">Prior work: <a href="https://kaist-viclab.github.io/C-DiffSET_site/" target="_blank" rel="noopener">C-DiffSET</a> (IEEE TCSVT 2026)</span>
+          <button class="copy-btn" type="button" data-copy="#bibtex-code-prior">
+            <svg class="icon icon-copy" aria-hidden="true"><use href="#i-copy"/></svg><svg class="icon icon-done" aria-hidden="true"><use href="#i-check"/></svg><span class="copy-label" aria-live="polite">Copy</span>
+          </button>
+        </div>
+<pre><code id="bibtex-code-prior">@article{do2026cdiffset,
+  title={C-DiffSET: Leveraging Latent Diffusion for SAR-to-EO Image Translation with Confidence-Guided Reliable Object Generation},
+  author={Do, Jeonghyeok and Lee, Jaehyup and Lee, Seungchul and Kim, Munchurl},
+  journal={IEEE Transactions on Circuits and Systems for Video Technology},
+  year={2026},
+  doi={10.1109/TCSVT.2026.3701447}
+}</code></pre>
+      </div>
     </div>
   </section>
 
 </main>
+
+<!-- lineage:start -->
+<nav class="lineage" aria-label="Research line: Remote sensing">
+  <div class="container">
+    <p class="lineage-head"><span class="lineage-title">Research line</span><span class="lineage-topic">Remote sensing</span></p>
+    <ol class="lineage-list">
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/U-Know-DiffPAN-site/"><span class="lineage-name">U-Know-DiffPAN</span><span class="lineage-venue">CVPR 2025</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/PAN-Crafter_site/"><span class="lineage-name">PAN-Crafter</span><span class="lineage-venue">ICCV 2025</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/C-DiffSET_site/"><span class="lineage-name">C-DiffSET</span><span class="lineage-venue">IEEE TCSVT 2026</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/GeoCore-9B_site/"><span class="lineage-name">GeoCore-9B</span><span class="lineage-venue">NeurIPS 2026</span></a></li>
+      <li class="lineage-stage"><a class="lineage-item" href="https://kaist-viclab.github.io/ReFlowSET_site/"><span class="lineage-name">ReFlowSET</span><span class="lineage-venue">arXiv 2026</span></a><span class="lineage-item is-current" aria-current="page"><span class="lineage-name">GeoSET</span><span class="lineage-venue">arXiv 2026</span></span><a class="lineage-item" href="https://kaist-viclab.github.io/GeoCR_site/"><span class="lineage-name">GeoCR</span><span class="lineage-venue">arXiv 2026</span></a></li>
+    </ol>
+  </div>
+</nav>
+<!-- lineage:end -->
 
 <footer class="footer">
   <div class="container footer-inner">
