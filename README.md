@@ -42,8 +42,6 @@ colours (ink `#1C2738`, blue `#1B6FCB`).
 
 ## arXiv link
 
-The arXiv ID is not assigned yet. Until it is, the arXiv button, the footer's arXiv link and the BibTeX entry hold a
-placeholder ID; a link that holds it is shown as pending (the arXiv button carries a "soon" badge) and does not navigate,
-with or without JavaScript. The Paper button and the navigation bar's Paper link open the hosted PDF,
-`static/paper/GeoSET.pdf`. Once the paper is on arXiv, replacing the placeholder in `index.html` with the real ID is
-enough; the links then work as normal links, and no CSS or JavaScript file needs editing.
+The paper is on arXiv as [arXiv:2609.37496](https://arxiv.org/abs/2609.37496). The arXiv button, the footer's arXiv link
+and the BibTeX entry point to it. The Paper button and the navigation bar's Paper link open the hosted PDF,
+`static/paper/GeoSET.pdf`.
